@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import SearchableSelect from '@/components/SearchableSelect';
+import { runQAChecks, getRulesForChannel, defaultQARules } from '@/lib/qa-checks';
 
 interface QACheck {
   id: string;
@@ -211,8 +213,68 @@ export default function PageQAPage() {
   });
 
   const handleRunQA = (pageId: string) => {
-    alert(`Running QA checks for page ${pageId}...`);
-    // In real implementation, this would trigger the QA automation
+    const page = pageQAs.find(p => p.id === pageId);
+    if (!page) return;
+
+    // Simulate running QA checks
+    const mockContent = `
+      Welcome to our Collagen Peptides page!
+      Buy now for $29.99 (was $49.99)
+      Limited time offer - hurry!
+      These statements have not been evaluated by the FDA.
+      Customer testimonial: "Great product!" - Results may vary
+      Shop now and get free shipping
+      Terms & Conditions | Privacy Policy
+    `;
+
+    // Get channel from page (default to Web)
+    const channel = 'Web';
+    
+    // Run actual QA checks
+    const checkResults = runQAChecks(mockContent, channel);
+    
+    // Convert results to QACheck format
+    const newChecks: QACheck[] = checkResults.map((result, idx) => {
+      const rule = defaultQARules.find(r => r.id === result.ruleId);
+      return {
+        id: `check-${Date.now()}-${idx}`,
+        category: rule?.category || 'spelling',
+        severity: rule?.severity || 'warning',
+        message: result.message || 'Check completed',
+        location: result.location || 'Unknown',
+        autoDetected: true,
+      };
+    });
+
+    // Update page with new checks
+    const updatedPages = pageQAs.map(p => {
+      if (p.id === pageId) {
+        const criticalIssues = newChecks.filter(c => c.severity === 'critical').length;
+        const hasIssues = newChecks.length > 0;
+        
+        return {
+          ...p,
+          checks: newChecks,
+          checksRun: defaultQARules.filter(r => r.enabled).length,
+          issuesFound: newChecks.length,
+          status: criticalIssues > 0 ? 'critical' : hasIssues ? 'issues' : 'passed',
+          lastChecked: 'Just now',
+        };
+      }
+      return p;
+    });
+
+    setPageQAs(updatedPages);
+    
+    // Update selected page if it's open
+    if (selectedPage?.id === pageId) {
+      const updatedPage = updatedPages.find(p => p.id === pageId);
+      if (updatedPage) {
+        setSelectedPage(updatedPage);
+      }
+    }
+
+    alert(`✅ QA checks complete!\n\n${defaultQARules.filter(r => r.enabled).length} checks run\n${newChecks.length} issues found`);
   };
 
   const handleAddComment = (checkId: string) => {
@@ -282,10 +344,31 @@ export default function PageQAPage() {
   return (
     <div style={{ padding: '48px 56px' }}>
       {/* Header */}
-      <div className="content-header">
-        <h1 className="header-title">
-          Page QA
-        </h1>
+      <div className="content-header" style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h1 className="header-title">
+            Page QA
+          </h1>
+          <Link href="/page-qa/settings">
+            <button
+              style={{
+                padding: '10px 20px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '6px',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              ⚙️ QA Settings ({defaultQARules.filter(r => r.enabled).length} checks enabled)
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -369,6 +452,46 @@ export default function PageQAPage() {
         >
           ▶️ Run All QA Checks
         </button>
+      </div>
+
+      {/* Active Checks Info */}
+      <div style={{
+        marginBottom: '16px',
+        background: 'rgba(29,185,84,0.1)',
+        border: '1px solid rgba(29,185,84,0.3)',
+        borderRadius: '8px',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '20px' }}>✅</span>
+          <div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#1db954', marginBottom: '2px' }}>
+              {defaultQARules.filter(r => r.enabled).length} Active QA Checks
+            </div>
+            <div style={{ fontSize: '12px', color: '#888' }}>
+              {defaultQARules.filter(r => r.enabled && r.severity === 'critical').length} critical • {' '}
+              {defaultQARules.filter(r => r.enabled && r.severity === 'warning').length} warnings • {' '}
+              {defaultQARules.filter(r => r.enabled && r.severity === 'info').length} info
+            </div>
+          </div>
+        </div>
+        <Link href="/page-qa/settings">
+          <button style={{
+            padding: '6px 12px',
+            background: 'rgba(29,185,84,0.2)',
+            border: '1px solid rgba(29,185,84,0.4)',
+            borderRadius: '6px',
+            color: '#1db954',
+            fontSize: '12px',
+            fontWeight: '600',
+            cursor: 'pointer',
+          }}>
+            Customize Checks →
+          </button>
+        </Link>
       </div>
 
       {/* Stats Summary */}
