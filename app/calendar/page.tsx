@@ -439,10 +439,11 @@ export default function PageManagerPage() {
             </thead>
             <tbody>
               {filteredPages.map((page, index) => (
+                <>
                 <tr 
                   key={page.id} 
                   style={{ 
-                    borderBottom: index < filteredPages.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    borderBottom: page.qaStatus && page.qaStatus !== 'qa-complete' ? 'none' : index < filteredPages.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
@@ -690,6 +691,7 @@ export default function PageManagerPage() {
                     </td>
                   </tr>
                 )}
+                </>
               ))}
             </tbody>
           </table>
