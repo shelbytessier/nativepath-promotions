@@ -361,15 +361,15 @@ export default function OffersLibraryPage() {
                   <div className="offer-tier-label">Single</div>
                   {offer.productCode === 'COL-25' && (
                     <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
+                      width: '80px', 
+                      height: '80px', 
                       margin: '8px auto 12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: 'rgba(255,255,255,0.03)',
                       borderRadius: '6px',
-                      padding: '8px'
+                      padding: '12px'
                     }}>
                       <img 
                         src="/images/products/collagen.png" 
@@ -395,15 +395,15 @@ export default function OffersLibraryPage() {
                   <div className="offer-tier-label">3-Pack</div>
                   {offer.productCode === 'COL-25' && (
                     <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
+                      width: '80px', 
+                      height: '80px', 
                       margin: '8px auto 12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: 'rgba(255,255,255,0.03)',
                       borderRadius: '6px',
-                      padding: '8px'
+                      padding: '12px'
                     }}>
                       <img 
                         src="/images/products/collagen-25s-3.png" 
@@ -433,15 +433,15 @@ export default function OffersLibraryPage() {
                   <div className="offer-tier-label">6-Pack</div>
                   {offer.productCode === 'COL-25' && (
                     <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
+                      width: '80px', 
+                      height: '80px', 
                       margin: '8px auto 12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: 'rgba(255,255,255,0.03)',
                       borderRadius: '6px',
-                      padding: '8px'
+                      padding: '12px'
                     }}>
                       <img 
                         src="/images/products/collagen-25s-6.png" 
