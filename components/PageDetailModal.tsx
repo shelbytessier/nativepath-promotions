@@ -47,7 +47,23 @@ export default function PageDetailModal({ isOpen, onClose, page }: PageDetailMod
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
           <div>
             <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px' }}>{page.name}</h2>
-            <p style={{ color: '#b3b3b3' }}>Channel: {page.channelEmoji} {page.channel}</p>
+            <a 
+              href={`https://${page.url}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                fontSize: '13px', 
+                color: '#3b82f6',
+                textDecoration: 'none',
+                display: 'block',
+                marginBottom: '8px'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+            >
+              {page.url}
+            </a>
+            <p style={{ color: '#b3b3b3', fontSize: '13px' }}>{page.channelEmoji} {page.channel} • {page.campaign}</p>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <span style={{

@@ -54,10 +54,46 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
 
   // Mock data for pages using this offer
   const pages = [
-    { name: 'VDay - Meta - Joint Pain', channel: 'Meta', channelType: 'web', status: 'Live' },
-    { name: 'VDay - Meta - Energy', channel: 'Meta', channelType: 'web', status: 'Live' },
-    { name: 'Amazon Collagen Listing', channel: 'Amazon', channelType: 'amazon', status: 'Live' },
-    { name: 'Walmart Marketplace Listing', channel: 'Walmart', channelType: 'walmart', status: 'In Dev' },
+    { 
+      name: 'VDAY-26 | Joint Pain Angle', 
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
+      campaign: 'VDAY-26',
+      campaignColor: '#ec4899',
+      channel: 'Meta', 
+      channelEmoji: '📘',
+      channelType: 'web', 
+      status: 'Live' 
+    },
+    { 
+      name: 'VDAY-26 | Energy VSL', 
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
+      campaign: 'VDAY-26',
+      campaignColor: '#ec4899',
+      channel: 'Meta', 
+      channelEmoji: '📘',
+      channelType: 'web', 
+      status: 'Live' 
+    },
+    { 
+      name: 'EVRGN | Amazon Collagen Listing', 
+      url: 'amazon.com/nativepath-collagen',
+      campaign: 'EVRGN',
+      campaignColor: '#1db954',
+      channel: 'Amazon', 
+      channelEmoji: '📦',
+      channelType: 'amazon', 
+      status: 'Live' 
+    },
+    { 
+      name: 'SPRNG-26 | Walmart Marketplace', 
+      url: 'walmart.com/nativepath-collagen',
+      campaign: 'SPRNG-26',
+      campaignColor: '#f59e0b',
+      channel: 'Walmart', 
+      channelEmoji: '🛒',
+      channelType: 'walmart', 
+      status: 'In Dev' 
+    },
   ];
 
   const filteredPages = pageFilter === 'all' ? pages : pages.filter(p => p.channelType === pageFilter);
@@ -305,9 +341,40 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
             <div className="offer-pages-list">
               {filteredPages.map((page, idx) => (
                 <div key={idx} className="offer-page-item" data-channel={page.channelType}>
-                  <div>
-                    <div className="offer-page-name">{page.name}</div>
-                    <div className="offer-page-channel">{page.channel}</div>
+                  <div style={{ flex: 1 }}>
+                    <div className="offer-page-name" style={{ fontWeight: '600', marginBottom: '4px' }}>{page.name}</div>
+                    <a 
+                      href={`https://${page.url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ 
+                        fontSize: '11px', 
+                        color: '#3b82f6',
+                        textDecoration: 'none',
+                        display: 'block',
+                        marginBottom: '6px'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                    >
+                      {page.url}
+                    </a>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '11px' }}>
+                      <span style={{ 
+                        background: page.campaignColor, 
+                        color: '#000', 
+                        padding: '2px 8px', 
+                        borderRadius: '4px', 
+                        fontWeight: '600',
+                        fontSize: '10px'
+                      }}>
+                        {page.campaign}
+                      </span>
+                      <span style={{ color: '#888' }}>
+                        {page.channelEmoji} {page.channel}
+                      </span>
+                    </div>
                   </div>
                   <div className="offer-page-right">
                     <span className={`offer-page-status ${page.status === 'Live' ? 'live' : 'dev'}`}>
