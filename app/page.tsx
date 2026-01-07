@@ -16,35 +16,7 @@ export default function Dashboard() {
           </h1>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <Link href="/testing" style={{ textDecoration: 'none' }}>
-            <button 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px', 
-                padding: '12px 20px', 
-                background: 'rgba(255,255,255,0.05)', 
-                border: '1px solid rgba(255,255,255,0.1)', 
-                borderRadius: '6px', 
-                color: '#fff', 
-                fontSize: '14px', 
-                fontWeight: 500, 
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              🧪 View Testing
-            </button>
-          </Link>
-          <Link href="/products" style={{ textDecoration: 'none' }}>
+          <Link href="/calendar" style={{ textDecoration: 'none' }}>
             <button 
               style={{ 
                 display: 'flex', 
@@ -70,7 +42,7 @@ export default function Dashboard() {
                 e.currentTarget.style.boxShadow = '0 2px 8px rgba(29, 185, 84, 0.3)';
               }}
             >
-              ➕ Quick Add
+              ➕ Request New Page
             </button>
           </Link>
         </div>
