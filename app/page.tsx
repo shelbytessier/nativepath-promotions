@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Sparkline from '@/components/Sparkline';
 
 export default function Dashboard() {
   const router = useRouter();

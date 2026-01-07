@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import LaunchDetailModal from '@/components/LaunchDetailModal';
+import DateRangePicker from '@/components/DateRangePicker';
+import Sparkline from '@/components/Sparkline';
 
 interface Launch {
   id: string;
@@ -77,6 +79,9 @@ export default function LaunchesPage() {
   const [perfView, setPerfView] = useState<'aggregated' | 'by-channel' | 'by-product'>('aggregated');
   const [perfTimeFilter, setPerfTimeFilter] = useState('30d');
   const [perfCompareFilter, setPerfCompareFilter] = useState('last-week');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [customStartDate, setCustomStartDate] = useState('2025-12-01');
+  const [customEndDate, setCustomEndDate] = useState('2026-01-06');
 
   const filteredLaunches = mockLaunches.filter((launch) =>
     launch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -290,10 +295,12 @@ export default function LaunchesPage() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          gap: '8px'
         }}>
           <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff' }}>{launchedThisYear}</div>
           <div style={{ fontSize: '12px', color: '#666' }}>Launched This Year</div>
+          <Sparkline data={[2, 2, 3, 3, 4]} />
         </div>
       </div>
 
@@ -608,27 +615,48 @@ export default function LaunchesPage() {
         {/* Top Row: Title and Filters */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '12px' }}>
           <h3 style={{ fontSize: '18px', fontWeight: 600 }}>Launch Performance</h3>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <select
-              value={perfTimeFilter}
-              onChange={(e) => setPerfTimeFilter(e.target.value)}
-              style={{
-                padding: '7px 14px',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '6px',
-                color: '#fff',
-                fontSize: '13px',
-                cursor: 'pointer',
-                outline: 'none'
-              }}
-            >
-              <option value="30d">Last 30 Days</option>
-              <option value="q4-2025">Q4 2025</option>
-              <option value="q1-2026">Q1 2026</option>
-              <option value="2025">Year 2025</option>
-              <option value="custom">Custom Range</option>
-            </select>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', position: 'relative' }}>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={perfTimeFilter}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPerfTimeFilter(val);
+                  if (val === 'custom') {
+                    setShowDatePicker(true);
+                  }
+                }}
+                style={{
+                  padding: '7px 14px',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  outline: 'none'
+                }}
+              >
+                <option value="30d">Last 30 Days</option>
+                <option value="q4-2025">Q4 2025</option>
+                <option value="q1-2026">Q1 2026</option>
+                <option value="2025">Year 2025</option>
+                <option value="custom">
+                  {perfTimeFilter === 'custom' ? `${customStartDate} to ${customEndDate}` : 'Custom Range'}
+                </option>
+              </select>
+              {showDatePicker && (
+                <DateRangePicker
+                  startDate={customStartDate}
+                  endDate={customEndDate}
+                  onApply={(start, end) => {
+                    setCustomStartDate(start);
+                    setCustomEndDate(end);
+                  }}
+                  onClose={() => setShowDatePicker(false)}
+                />
+              )}
+            </div>
             <select
               value={perfCompareFilter}
               onChange={(e) => setPerfCompareFilter(e.target.value)}
