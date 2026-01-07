@@ -434,16 +434,17 @@ export default function PageManagerPage() {
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>PAIN POINT</th>
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>STATUS</th>
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>QA STATUS</th>
+                <th style={{ padding: '14px 12px', textAlign: 'center', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>ISSUES</th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>LAST CHECKED</th>
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
               {filteredPages.map((page, index) => (
-                <>
                 <tr 
                   key={page.id} 
                   style={{ 
-                    borderBottom: page.qaStatus && page.qaStatus !== 'qa-complete' ? 'none' : index < filteredPages.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    borderBottom: index < filteredPages.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
@@ -613,6 +614,25 @@ export default function PageManagerPage() {
                       </span>
                     )}
                   </td>
+                  <td style={{ padding: '14px 12px', textAlign: 'center' }}>
+                    {page.qaStatus && (
+                      <span style={{ 
+                        color: page.qaIssues && page.qaIssues > 0 ? '#f59e0b' : '#1db954',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {page.qaIssues || 0}
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ padding: '14px 12px' }}>
+                    {page.qaStatus && (
+                      <span style={{ fontSize: '11px', color: '#666', whiteSpace: 'nowrap' }}>
+                        {page.qaLastChecked || 'Never'}
+                      </span>
+                    )}
+                  </td>
                   <td style={{ padding: '14px 12px' }}>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       {page.qaStatus && page.qaStatus !== 'qa-complete' && (
@@ -663,35 +683,6 @@ export default function PageManagerPage() {
                     </div>
                   </td>
                 </tr>
-                {/* QA Info Row */}
-                {page.qaStatus && page.qaStatus !== 'qa-complete' && (
-                  <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: index < filteredPages.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                    <td colSpan={11} style={{ padding: '12px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '11px', color: '#888' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ color: page.qaIssues && page.qaIssues > 0 ? '#f59e0b' : '#1db954' }}>
-                            {page.qaIssues && page.qaIssues > 0 ? '⚠️' : '✅'}
-                          </span>
-                          <span>
-                            {page.qaIssues || 0} issue{page.qaIssues !== 1 ? 's' : ''} found
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span>🕐</span>
-                          <span>Last checked: {page.qaLastChecked || 'Never'}</span>
-                        </div>
-                        {page.qaIssues && page.qaIssues > 0 && (
-                          <Link href={`/page-qa/review/${page.id}`}>
-                            <span style={{ color: '#3b82f6', textDecoration: 'underline', cursor: 'pointer' }}>
-                              View issues →
-                            </span>
-                          </Link>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-                </>
               ))}
             </tbody>
           </table>
