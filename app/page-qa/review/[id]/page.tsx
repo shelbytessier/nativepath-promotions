@@ -296,6 +296,26 @@ export default function PageReviewPage() {
 
         {/* Actions */}
         <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <a
+            href={page.pageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: '10px 16px',
+              background: 'rgba(59,130,246,0.15)',
+              border: '1px solid rgba(59,130,246,0.3)',
+              borderRadius: '6px',
+              color: '#3b82f6',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              textAlign: 'center',
+              textDecoration: 'none',
+              display: 'block',
+            }}
+          >
+            🔗 Open Page in New Tab
+          </a>
           <button
             onClick={handleRunQA}
             disabled={isRunningQA}
@@ -591,14 +611,31 @@ export default function PageReviewPage() {
               transform: 'translate(-50%, -50%)',
               color: '#888',
               fontSize: '14px',
+              textAlign: 'center',
+              zIndex: 10,
             }}>
-              Loading page...
+              <div style={{ marginBottom: '16px' }}>Loading page...</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                If the page doesn't load, it may block iframe embedding.
+                <br />
+                <a 
+                  href={page.pageUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ color: '#3b82f6', textDecoration: 'underline', marginTop: '8px', display: 'inline-block' }}
+                >
+                  Open in new tab →
+                </a>
+              </div>
             </div>
           )}
           
           <iframe
-            src={`https://${page.pageUrl}`}
+            src={page.pageUrl}
             onLoad={() => setIframeLoaded(true)}
+            onError={() => {
+              console.error('Iframe failed to load');
+            }}
             style={{
               width: '100%',
               height: '100%',
