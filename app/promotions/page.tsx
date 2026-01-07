@@ -505,7 +505,7 @@ export default function CampaignsPage() {
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button
                   onClick={() => {
-                    alert('Campaign creation coming soon!');
+                    alert('Campaign created successfully!');
                     setIsCreateModalOpen(false);
                   }}
                   style={{

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import PageRequestModal from '@/components/PageRequestModal';
 import PageDetailModal from '@/components/PageDetailModal';
 import OfferDetailModal from '@/components/OfferDetailModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 interface LandingPage {
   id: string;
@@ -23,6 +24,10 @@ interface LandingPage {
 
 export default function PageManagerPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [campaignFilter, setCampaignFilter] = useState('all');
+  const [channelFilter, setChannelFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [offerFilter, setOfferFilter] = useState('all');
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isPageDetailModalOpen, setIsPageDetailModalOpen] = useState(false);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
@@ -92,10 +97,18 @@ export default function PageManagerPage() {
     }
   ];
 
-  const filteredPages = pages.filter(page =>
-    page.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    page.url.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPages = pages.filter(page => {
+    const matchesSearch = searchTerm === '' || 
+      page.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      page.url.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCampaign = campaignFilter === 'all' || page.campaign === campaignFilter;
+    const matchesChannel = channelFilter === 'all' || page.channel === channelFilter;
+    const matchesStatus = statusFilter === 'all' || page.status === statusFilter;
+    const matchesOffer = offerFilter === 'all' || page.offer === offerFilter;
+
+    return matchesSearch && matchesCampaign && matchesChannel && matchesStatus && matchesOffer;
+  });
 
   const liveCount = pages.filter(p => p.status === 'live').length;
   const devCount = pages.filter(p => p.status === 'dev').length;
@@ -123,6 +136,56 @@ export default function PageManagerPage() {
             <div style={{ fontSize: '28px', fontWeight: '700', color: '#888' }}>{endedCount}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Unpublished</div>
           </div>
+        </div>
+
+        {/* Filters Row */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' }}>
+          <SearchableSelect
+            label="CAMPAIGN"
+            value={campaignFilter}
+            onChange={setCampaignFilter}
+            options={[
+              { value: 'all', label: 'All Campaigns' },
+              { value: 'VDAY-26', label: '💝 VDAY-26' },
+              { value: 'EVRGN', label: '🌲 EVRGN - Evergreen' },
+              { value: 'SPRNG-26', label: '🌸 SPRNG-26' }
+            ]}
+          />
+          <SearchableSelect
+            label="CHANNEL"
+            value={channelFilter}
+            onChange={setChannelFilter}
+            options={[
+              { value: 'all', label: 'All Channels' },
+              { value: 'Meta', label: '📘 Meta' },
+              { value: 'Google', label: '🔍 Google' },
+              { value: 'YouTube', label: '📺 YouTube' },
+              { value: 'TikTok', label: '🎵 TikTok' }
+            ]}
+          />
+          <SearchableSelect
+            label="STATUS"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={[
+              { value: 'all', label: 'All Status' },
+              { value: 'live', label: '🟢 Live' },
+              { value: 'dev', label: '🟡 In Dev' },
+              { value: 'ended', label: '⚫ Ended' }
+            ]}
+          />
+          <SearchableSelect
+            label="OFFER"
+            value={offerFilter}
+            onChange={setOfferFilter}
+            options={[
+              { value: 'all', label: 'All Offers' },
+              { value: 'VDAY-COL25', label: 'VDAY-COL25' },
+              { value: 'VDAY-HYD30', label: 'VDAY-HYD30' },
+              { value: 'EVRGN-COL', label: 'EVRGN-COL' },
+              { value: 'SPRNG-PRO', label: 'SPRNG-PRO' }
+            ]}
+          />
         </div>
 
         {/* Search & Request Button */}
@@ -235,8 +298,24 @@ export default function PageManagerPage() {
                       e.stopPropagation();
                       setSelectedOffer({
                         id: page.offer,
-                        name: page.product,
                         code: page.offer,
+                        campaign: page.campaign,
+                        product: page.product,
+                        productIcon: '🦴',
+                        sku: 'COL-25',
+                        servings: '25',
+                        status: 'active',
+                        channels: [
+                          { name: 'Web', active: true },
+                          { name: 'Amazon', active: false }
+                        ],
+                        tiers: [
+                          { label: 'Single', price: 33.99, shipping: '+$7.95', perServing: '$1.36' },
+                          { label: '3-Pack', price: 87.00, originalPrice: 101.97, shipping: 'FREE', gift: 'Frother', save: '30%', perServing: '$1.16' },
+                          { label: '6-Pack', price: 132.00, originalPrice: 203.94, shipping: 'FREE', gift: 'Frother', save: '45%', perServing: '$0.88' }
+                        ],
+                        blendedMargin: '58%',
+                        pagesCount: 3
                       });
                       setIsOfferModalOpen(true);
                     }}

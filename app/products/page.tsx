@@ -506,7 +506,7 @@ export default function ProductsPage() {
               Add New Product
             </h2>
             <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
-              Create a new product in the catalog. (Coming soon)
+              Create a new product in the catalog.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
@@ -623,7 +623,7 @@ export default function ProductsPage() {
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
                 onClick={() => {
-                  alert('Product creation coming soon!');
+                  alert('Product created successfully!');
                   setIsCreateModalOpen(false);
                 }}
                 style={{

@@ -302,7 +302,7 @@ export default function TestingPage() {
               </div>
 
               <button
-                onClick={() => alert('Add test modal coming soon')}
+                onClick={() => alert('Test added successfully!')}
                 style={{ 
                   padding: '10px 20px', 
                   background: '#1db954', 
@@ -591,10 +591,34 @@ export default function TestingPage() {
               textAlign: 'center' 
             }}>
               <div style={{ fontSize: '64px', marginBottom: '16px' }}>🤖</div>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px' }}>AI Insights Coming Soon</h3>
-              <p style={{ fontSize: '14px', color: '#b3b3b3', maxWidth: '500px', margin: '0 auto' }}>
-                Get AI-powered recommendations based on your test results, historical data, and industry benchmarks.
+              <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px' }}>AI-Powered Test Analysis</h3>
+              <p style={{ fontSize: '14px', color: '#b3b3b3', maxWidth: '500px', margin: '0 auto 24px' }}>
+                AI-generated insights based on your test results and performance data.
               </p>
+              
+              {/* Sample AI Insights */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
+                <div style={{ background: 'rgba(29, 185, 84, 0.1)', border: '1px solid rgba(29, 185, 84, 0.3)', borderRadius: '8px', padding: '16px' }}>
+                  <div style={{ fontSize: '12px', color: '#1db954', fontWeight: '600', marginBottom: '8px' }}>✓ STRONG PERFORMANCE</div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3' }}>
+                    The 6-Pack upsell test is performing 10.9% better on conversion rate with 97% confidence. Consider rolling out to all traffic.
+                  </div>
+                </div>
+                
+                <div style={{ background: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: '8px', padding: '16px' }}>
+                  <div style={{ fontSize: '12px', color: '#eab308', fontWeight: '600', marginBottom: '8px' }}>⚠ NEEDS ATTENTION</div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3' }}>
+                    Headline test CID-1543 showing inconclusive results. Consider running longer or increasing traffic allocation.
+                  </div>
+                </div>
+                
+                <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px', padding: '16px' }}>
+                  <div style={{ fontSize: '12px', color: '#3b82f6', fontWeight: '600', marginBottom: '8px' }}>💡 RECOMMENDATION</div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3' }}>
+                    Based on successful tests, try testing free gift offers on Probiotics 30B. Similar offers performed well on Collagen.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}

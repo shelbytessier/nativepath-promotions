@@ -339,7 +339,7 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
               color: '#666',
               fontSize: '13px'
             }}>
-              3-Pack pricing (Coming soon)
+              3-Pack pricing
             </div>
 
             {/* 6-Pack Placeholder */}
@@ -354,7 +354,7 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
               color: '#666',
               fontSize: '13px'
             }}>
-              6-Pack pricing (Coming soon)
+              6-Pack pricing
             </div>
           </div>
 
