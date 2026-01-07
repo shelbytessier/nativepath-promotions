@@ -593,7 +593,7 @@ export default function TestingPage() {
 
             {/* AI Insights Cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* High-Impact Winners */}
+              {/* ALWAYS SHOW: High-Impact Winners */}
               <div style={{ background: 'rgba(29, 185, 84, 0.08)', border: '1px solid rgba(29, 185, 84, 0.3)', borderRadius: '8px', padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ fontSize: '24px' }}>🏆</div>
@@ -610,41 +610,7 @@ export default function TestingPage() {
                 </div>
               </div>
 
-              {/* Product-Specific Insights */}
-              <div style={{ background: 'rgba(147, 51, 234, 0.08)', border: '1px solid rgba(147, 51, 234, 0.3)', borderRadius: '8px', padding: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '24px' }}>🦴</div>
-                  <div style={{ fontSize: '14px', color: '#a855f7', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Collagen 25s Insights</div>
-                </div>
-                <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
-                  Free gift offers consistently outperform discount-only offers
-                </div>
-                <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
-                  Across 3 completed tests, offers including a frother or shaker performed +8.2% better on conversion vs. percentage discounts alone. This pattern holds true on Meta, Google, and YouTube.
-                </div>
-                <div style={{ fontSize: '12px', color: '#888' }}>
-                  <strong>Action Item:</strong> Apply this learning to Probiotics 30B and Hydrate. Test free measuring spoon or travel pack as gifts.
-                </div>
-              </div>
-
-              {/* Channel-Specific Insights */}
-              <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px', padding: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '24px' }}>📘</div>
-                  <div style={{ fontSize: '14px', color: '#3b82f6', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Meta Channel Patterns</div>
-                </div>
-                <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
-                  Shorter headlines (+25% CTR) but longer landing pages (+12% CR)
-                </div>
-                <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
-                  Meta traffic responds best to concise, curiosity-driven headlines in ads, but once on-page, they convert better with detailed testimonial sections and ingredient breakdowns (3000+ words).
-                </div>
-                <div style={{ fontSize: '12px', color: '#888' }}>
-                  <strong>Next Test:</strong> Try this pattern on TikTok traffic, which currently has average page length.
-                </div>
-              </div>
-
-              {/* Needs Attention */}
+              {/* ALWAYS SHOW: Tests Needing Review */}
               <div style={{ background: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.3)', borderRadius: '8px', padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ fontSize: '24px' }}>⚠️</div>
@@ -661,11 +627,11 @@ export default function TestingPage() {
                 </div>
               </div>
 
-              {/* Cross-Product Learning */}
-              <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '8px', padding: '20px' }}>
+              {/* ALWAYS SHOW: Cross-Product Opportunities */}
+              <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ fontSize: '24px' }}>💡</div>
-                  <div style={{ fontSize: '14px', color: '#8b5cf6', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cross-Product Opportunity</div>
+                  <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cross-Product Opportunity</div>
                 </div>
                 <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
                   "Before/After" imagery increased conversions +15% for Collagen
@@ -677,6 +643,116 @@ export default function TestingPage() {
                   <strong>Test Idea:</strong> Try before/after imagery for Hydrate (skin hydration) and MCT Oil (energy/weight) on visual channels.
                 </div>
               </div>
+
+              {/* FILTERED: Product-Specific Insights */}
+              {(aiInsightsProduct === 'all' || aiInsightsProduct === 'collagen') && (
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '24px' }}>🦴</div>
+                    <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Collagen 25s Insights</div>
+                  </div>
+                  <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
+                    Free gift offers consistently outperform discount-only offers
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
+                    Across 3 completed tests, offers including a frother or shaker performed +8.2% better on conversion vs. percentage discounts alone. This pattern holds true on Meta, Google, and YouTube.
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    <strong>Action Item:</strong> Apply this learning to Probiotics 30B and Hydrate. Test free measuring spoon or travel pack as gifts.
+                  </div>
+                </div>
+              )}
+
+              {(aiInsightsProduct === 'all' || aiInsightsProduct === 'probiotics') && (
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '24px' }}>💊</div>
+                    <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Probiotics 30B Insights</div>
+                  </div>
+                  <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
+                    Subscription offers convert better than one-time purchases (+18%)
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
+                    Tests on Google and Meta show that leading with subscription pricing (with clear "skip or cancel anytime") significantly outperforms one-time purchase CTAs. Customers perceive better value per serving.
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    <strong>Action Item:</strong> Make subscription the default selection on all Probiotics landing pages with one-time as secondary option.
+                  </div>
+                </div>
+              )}
+
+              {(aiInsightsProduct === 'all' || aiInsightsProduct === 'hydrate') && (
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '24px' }}>💧</div>
+                    <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hydrate Insights</div>
+                  </div>
+                  <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
+                    Flavor variety messaging increases AOV by +$12
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
+                    Landing pages emphasizing "try all 3 flavors" and showing flavor variety imagery lead to higher 3-pack purchases. Single-flavor hero images underperform by 14% on TikTok.
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    <strong>Action Item:</strong> Update all Hydrate creative to feature multiple flavor bottles in hero section.
+                  </div>
+                </div>
+              )}
+
+              {/* FILTERED: Channel-Specific Insights */}
+              {(aiInsightsChannel === 'all' || aiInsightsChannel === 'meta') && (
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '24px' }}>📘</div>
+                    <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Meta Channel Patterns</div>
+                  </div>
+                  <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
+                    Shorter headlines (+25% CTR) but longer landing pages (+12% CR)
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
+                    Meta traffic responds best to concise, curiosity-driven headlines in ads, but once on-page, they convert better with detailed testimonial sections and ingredient breakdowns (3000+ words).
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    <strong>Next Test:</strong> Try this pattern on TikTok traffic, which currently has average page length.
+                  </div>
+                </div>
+              )}
+
+              {(aiInsightsChannel === 'all' || aiInsightsChannel === 'google') && (
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '24px' }}>🔍</div>
+                    <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Google Channel Patterns</div>
+                  </div>
+                  <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
+                    Educational content + FAQ sections increase conversion by +19%
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
+                    Google search traffic is solution-seeking and converts significantly better with expanded FAQ sections, dosage explanations, and "how it works" content. Benefit-only pages underperform.
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    <strong>Action Item:</strong> Expand FAQ sections on all Google landing pages. Add "Science Behind X" sections.
+                  </div>
+                </div>
+              )}
+
+              {(aiInsightsChannel === 'all' || aiInsightsChannel === 'tiktok') && (
+                <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '24px' }}>🎵</div>
+                    <div style={{ fontSize: '14px', color: '#b3b3b3', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>TikTok Channel Patterns</div>
+                  </div>
+                  <div style={{ fontSize: '15px', color: '#fff', marginBottom: '12px', fontWeight: '600' }}>
+                    UGC-style landing pages outperform polished brand pages (+22% CR)
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', marginBottom: '12px' }}>
+                    TikTok traffic converts best when landing pages mirror the raw, authentic style of the platform. Stock photography and overly-polished design reduces trust and conversion rates.
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    <strong>Action Item:</strong> Create TikTok-specific landing page variants with customer photos, casual copy, and mobile-first layouts.
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
