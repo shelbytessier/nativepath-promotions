@@ -162,7 +162,7 @@ export default function TestDetailModal({ isOpen, onClose, test }: TestDetailMod
           border: '1px solid rgba(255,255,255,0.06)',
           borderRadius: '8px',
           padding: '16px',
-          marginBottom: '20px',
+          marginBottom: '24px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontSize: '12px', color: '#888', fontWeight: '600' }}>STATISTICAL CONFIDENCE</span>
@@ -177,6 +177,95 @@ export default function TestDetailModal({ isOpen, onClose, test }: TestDetailMod
               background: test.confidence >= 95 ? '#1db954' : test.confidence >= 70 ? '#eab308' : '#666',
               transition: 'width 0.3s ease'
             }} />
+          </div>
+        </div>
+
+        {/* TEST SUMMARY - From Original HTML */}
+        <div style={{
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '24px',
+        }}>
+          <h3 style={{ fontSize: '12px', color: '#888', fontWeight: '600', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            TEST SUMMARY
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+            <div>
+              <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px' }}>Conversion Delta</div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: test.deltas.convRate.value >= 0 ? '#1db954' : '#ef4444' }}>
+                {test.deltas.convRate.value >= 0 ? '+' : ''}{test.deltas.convRate.value.toFixed(2)}%
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px' }}>EPC Delta</div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: test.deltas.epc.value >= 0 ? '#1db954' : '#ef4444' }}>
+                ${Math.abs(test.deltas.epc.value).toFixed(2)}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px' }}>Statistical Confidence</div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: test.confidence >= 95 ? '#1db954' : test.confidence >= 70 ? '#eab308' : '#888' }}>
+                {test.confidence}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* DETAILED BREAKDOWN TABLE - From Original HTML */}
+        <div style={{
+          background: 'rgba(255,255,255,0.02)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '20px',
+        }}>
+          <h3 style={{ fontSize: '12px', color: '#888', fontWeight: '600', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            DETAILED BREAKDOWN
+          </h3>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <th style={{ textAlign: 'left', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>DATE</th>
+                  <th style={{ textAlign: 'left', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>LPID</th>
+                  <th style={{ textAlign: 'right', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>CLICKS</th>
+                  <th style={{ textAlign: 'right', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>SALES</th>
+                  <th style={{ textAlign: 'right', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>CONV %</th>
+                  <th style={{ textAlign: 'right', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>EPC</th>
+                  <th style={{ textAlign: 'right', padding: '12px 8px', color: '#888', fontWeight: '600', fontSize: '11px' }}>AOV</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Test Variant Row 1 */}
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                  <td style={{ padding: '12px 8px', color: '#b3b3b3' }}>{test.startDate}</td>
+                  <td style={{ padding: '12px 8px', color: '#b3b3b3', fontSize: '12px' }}>{test.testVariant.lpid}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{test.testVariant.clicks.toLocaleString()}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{test.testVariant.sales}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '700', color: '#1db954' }}>{test.testVariant.convRate.toFixed(2)}%</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>${test.testVariant.epc.toFixed(2)}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>${test.testVariant.aov.toFixed(2)}</td>
+                </tr>
+                {/* Control Variant Row */}
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                  <td style={{ padding: '12px 8px', color: '#b3b3b3' }}>{test.startDate}</td>
+                  <td style={{ padding: '12px 8px', color: '#b3b3b3', fontSize: '12px' }}>{test.controlVariant.lpid}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{test.controlVariant.clicks.toLocaleString()}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>{test.controlVariant.sales}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '700' }}>{test.controlVariant.convRate.toFixed(2)}%</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>${test.controlVariant.epc.toFixed(2)}</td>
+                  <td style={{ padding: '12px 8px', textAlign: 'right', fontWeight: '600' }}>${test.controlVariant.aov.toFixed(2)}</td>
+                </tr>
+                {/* Additional rows for visual completeness */}
+                <tr>
+                  <td style={{ padding: '12px 8px', color: '#666', fontSize: '12px' }} colSpan={7}>
+                    <em>Week {test.daysRunning / 7} of testing • {test.testVariant.clicks + test.controlVariant.clicks} total clicks</em>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
