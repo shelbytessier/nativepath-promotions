@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { runQAChecks, defaultQARules } from '@/lib/qa-checks';
@@ -105,6 +105,11 @@ export default function PageReviewPage() {
   const [showResolved, setShowResolved] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [isRunningQA, setIsRunningQA] = useState(false);
+  
+  // Refs for scrolling
+  const commentRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const commentsListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Load any existing comments from localStorage
@@ -176,6 +181,35 @@ export default function PageReviewPage() {
     }
   };
 
+  const handleMarkerClick = (commentId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedComment(commentId);
+    
+    // Scroll to comment in sidebar
+    const commentElement = commentRefs.current[commentId];
+    if (commentElement && commentsListRef.current) {
+      commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Flash highlight effect
+      commentElement.style.transition = 'background 0.3s';
+      commentElement.style.background = 'rgba(29,185,84,0.2)';
+      setTimeout(() => {
+        commentElement.style.background = selectedComment === commentId ? '#282828' : '#0f0f0f';
+      }, 600);
+    }
+  };
+
+  const handleCommentClick = (comment: Comment) => {
+    setSelectedComment(comment.id);
+    
+    // Scroll iframe to marker position
+    if (iframeRef.current) {
+      const iframe = iframeRef.current;
+      const scrollY = (comment.y / 100) * (iframe.contentWindow?.document.body.scrollHeight || 0);
+      iframe.contentWindow?.scrollTo({ top: scrollY - 200, behavior: 'smooth' });
+    }
+  };
+
   const handleRunQA = async () => {
     setIsRunningQA(true);
 
@@ -198,18 +232,38 @@ export default function PageReviewPage() {
         // Run comprehensive QA checks from our library
         const qaIssues = runQAChecks(result.data.textContent, channel);
         
-        // Convert QA issues to comments with varying positions
+        // Convert QA issues to comments with better positioning based on content
         qaIssues.forEach((issue, index) => {
           if (!issue.message || issue.passed) return; // Skip if no message or passed
           
           // Look up the rule to get severity and category
           const rule = defaultQARules.find(r => r.id === issue.ruleId);
           
-          const yPosition = 10 + (index * 12); // Spread them vertically
+          // Try to determine position based on issue location or content
+          let yPosition = 15; // Default starting position
+          let xPosition = 50; // Center by default
+          
+          // If issue has location info, use it
+          if (issue.location) {
+            // Try to find the location in the text content
+            const locationIndex = result.data.textContent.toLowerCase().indexOf(issue.location.toLowerCase());
+            if (locationIndex !== -1) {
+              // Estimate position based on text location (rough approximation)
+              const textProgress = locationIndex / result.data.textContent.length;
+              yPosition = 10 + (textProgress * 80); // Distribute from 10% to 90% of page
+            }
+          } else {
+            // Distribute issues evenly down the page
+            yPosition = 15 + (index * 8);
+          }
+          
+          // Vary x position slightly for visual clarity
+          xPosition = 45 + (index % 3) * 5; // Alternate between 45%, 50%, 55%
+          
           qaComments.push({
             id: `qa-${Date.now()}-${index}`,
-            x: 50,
-            y: Math.min(yPosition, 90), // Keep within bounds
+            x: xPosition,
+            y: Math.min(yPosition, 88), // Keep within bounds
             author: 'QA System',
             authorInitials: 'QA',
             text: issue.message,
@@ -435,7 +489,7 @@ export default function PageReviewPage() {
         </div>
 
         {/* Comments List */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+        <div ref={commentsListRef} style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
           <div style={{ fontSize: '11px', color: '#888', marginBottom: '12px', fontWeight: '600' }}>
             {visibleComments.length} COMMENT{visibleComments.length !== 1 ? 'S' : ''}
           </div>
@@ -453,7 +507,8 @@ export default function PageReviewPage() {
               {visibleComments.map((comment) => (
                 <div
                   key={comment.id}
-                  onClick={() => setSelectedComment(comment.id)}
+                  ref={(el) => { commentRefs.current[comment.id] = el; }}
+                  onClick={() => handleCommentClick(comment)}
                   style={{
                     background: selectedComment === comment.id ? 'rgba(29,185,84,0.1)' : '#0f0f0f',
                     border: `1px solid ${selectedComment === comment.id ? 'rgba(29,185,84,0.3)' : 'rgba(255,255,255,0.08)'}`,
@@ -705,6 +760,7 @@ export default function PageReviewPage() {
           )}
           
           <iframe
+            ref={iframeRef}
             src={page.pageUrl}
             onLoad={() => setIframeLoaded(true)}
             onError={() => {
@@ -722,10 +778,7 @@ export default function PageReviewPage() {
           {visibleComments.map((comment) => (
             <div
               key={comment.id}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedComment(comment.id);
-              }}
+              onClick={(e) => handleMarkerClick(comment.id, e)}
               style={{
                 position: 'absolute',
                 left: `${comment.x}%`,
