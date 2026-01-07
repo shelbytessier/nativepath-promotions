@@ -47,7 +47,15 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
         {/* Header */}
         <div className="product-modal-header">
           <div className="product-modal-icon">
-            <span>{product.icon}</span>
+            {product.name.toLowerCase().includes('collagen') ? (
+              <img 
+                src="/images/products/collagen.png" 
+                alt={product.name}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
+            ) : (
+              <span>{product.icon}</span>
+            )}
           </div>
           <div className="product-modal-title">
             <h2>{product.name}</h2>

@@ -242,7 +242,17 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
                     transition: 'all 0.2s',
                   }}
                 >
-                  <div style={{ fontSize: '28px', marginBottom: '8px' }}>{product.emoji}</div>
+                  <div style={{ fontSize: '28px', marginBottom: '8px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {product.name.toLowerCase().includes('collagen') ? (
+                      <img 
+                        src="/images/products/collagen.png" 
+                        alt={product.name}
+                        style={{ width: '50px', height: '50px', objectFit: 'contain' }}
+                      />
+                    ) : (
+                      product.emoji
+                    )}
+                  </div>
                   <div style={{ fontSize: '13px', fontWeight: '600' }}>{product.name}</div>
                   <div style={{ fontSize: '11px', color: '#888' }}>${product.price.toFixed(2)} base</div>
                 </div>

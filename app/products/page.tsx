@@ -346,7 +346,20 @@ export default function ProductsPage() {
             style={{ cursor: 'pointer' }}
           >
             <div className="product-card-image-area">
-              {product.emoji}
+              {product.category === 'collagen' ? (
+                <img 
+                  src="/images/products/collagen.png" 
+                  alt={product.name}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'contain',
+                    padding: '30px'
+                  }}
+                />
+              ) : (
+                product.emoji
+              )}
               <span className={`product-card-badge ${product.status}`}>
                 {product.status === 'active' ? 'Active' : product.status === 'low-stock' ? 'Low Stock' : 'Discontinued'}
               </span>

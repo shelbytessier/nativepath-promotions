@@ -124,7 +124,17 @@ export default function PageRequestModal({ isOpen, onClose }: PageRequestModalPr
                     }
                   }}
                 >
-                  <div style={{ fontSize: '48px', marginBottom: '12px' }}>{product.emoji}</div>
+                  <div style={{ fontSize: '48px', marginBottom: '12px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {product.name.toLowerCase().includes('collagen') ? (
+                      <img 
+                        src="/images/products/collagen.png" 
+                        alt={product.name}
+                        style={{ width: '70px', height: '70px', objectFit: 'contain' }}
+                      />
+                    ) : (
+                      product.emoji
+                    )}
+                  </div>
                   <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>{product.name}</div>
                   <div style={{ fontSize: '12px', color: '#888' }}>{product.price}</div>
                 </div>
