@@ -154,9 +154,6 @@ export default function OffersLibraryPage() {
         <h1 className="header-title">
           Offers Library
         </h1>
-        <p className="header-subtitle">
-          All approved offers with pricing breakdowns • Click any offer to see full details
-        </p>
       </div>
 
       {/* Stats Row */}

@@ -157,7 +157,6 @@ export default function TestingPage() {
     <div className="p-8">
       <div className="content-header">
         <h1 className="header-title">Testing</h1>
-        <p className="header-subtitle">CRO test results from HitPath • Statistical analysis • AI-powered insights</p>
       </div>
 
       <div className="content-body">

@@ -202,9 +202,6 @@ export default function ProductsPage() {
         <h1 className="header-title">
           Products
         </h1>
-        <p className="header-subtitle">
-          Product catalog & launch calendar
-        </p>
       </div>
 
       {/* Filter Bar */}

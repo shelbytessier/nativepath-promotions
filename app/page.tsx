@@ -14,9 +14,6 @@ export default function Dashboard() {
           <h1 className="header-title">
             Dashboard
           </h1>
-          <p className="header-subtitle">
-            3 items need attention • 2 campaigns live
-          </p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <Link href="/testing" style={{ textDecoration: 'none' }}>

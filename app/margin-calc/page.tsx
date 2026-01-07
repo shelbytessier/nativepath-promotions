@@ -105,7 +105,6 @@ export default function MarginCalcPage() {
     <div className="p-8">
       <div className="content-header">
         <h1 className="header-title">Margin Calculator</h1>
-        <p className="header-subtitle">Calculate margins with take rates, shipping, and discounts • Add rows to compare scenarios</p>
       </div>
 
       <div className="content-body">

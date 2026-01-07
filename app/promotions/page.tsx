@@ -119,7 +119,6 @@ export default function CampaignsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
         <div className="content-header" style={{ marginBottom: 0 }}>
           <h1 className="header-title">Campaigns</h1>
-          <p className="header-subtitle">Campaign calendar & timeline</p>
         </div>
         
         {/* View Mode Toggle */}

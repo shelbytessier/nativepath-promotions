@@ -176,9 +176,6 @@ export default function LaunchesPage() {
           <h1 className="header-title">
             Launches
           </h1>
-          <p className="header-subtitle">
-            Product launch calendar & performance tracking
-          </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {/* View Mode Toggle */}

@@ -118,7 +118,6 @@ export default function PageManagerPage() {
     <div className="p-8">
       <div className="content-header">
         <h1 className="header-title">Page Manager</h1>
-        <p className="header-subtitle">Track all landing pages • Request new pages • Web team adds URLs when live</p>
       </div>
 
       <div className="content-body">
