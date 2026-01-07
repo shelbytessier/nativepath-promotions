@@ -827,7 +827,7 @@ export const qaCheckFunctions = {
   },
 
   checkSignoff: (content: string): QACheckResult => {
-    const hasCorrectSignoff = /As always.?to being & staying on The Path together.*Dr\. Chad Walding/is.test(content);
+    const hasCorrectSignoff = /As always.?to being & staying on The Path together[\s\S]*Dr\. Chad Walding/i.test(content);
     return {
       ruleId: 'email-signoff',
       passed: hasCorrectSignoff,
@@ -980,7 +980,7 @@ export const qaCheckFunctions = {
 
   checkKrillShellfish: (content: string): QACheckResult => {
     const isKrill = /krill/i.test(content);
-    const hasFAQ = /safe to take krill oil.*shellfish allergy/is.test(content);
+    const hasFAQ = /safe to take krill oil[\s\S]*shellfish allergy/i.test(content);
     return {
       ruleId: 'prod-krill-shellfish-faq',
       passed: !isKrill || hasFAQ,
@@ -1014,7 +1014,7 @@ export const qaCheckFunctions = {
 
   checkD3K2Dosage: (content: string): QACheckResult => {
     const isD3K2 = /vitamin d3.*k2|d3.*k2/i.test(content);
-    const correctDosage = /2,?000\s*iu.*vitamin d3.*200\s*mcg.*k2/is.test(content);
+    const correctDosage = /2,?000\s*iu[\s\S]*vitamin d3[\s\S]*200\s*mcg[\s\S]*k2/i.test(content);
     return {
       ruleId: 'prod-d3k2-dosage',
       passed: !isD3K2 || correctDosage,
