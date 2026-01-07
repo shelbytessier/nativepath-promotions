@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { runQAChecks } from '@/lib/qa-checks';
 
 interface Comment {
   id: string;
@@ -111,6 +112,16 @@ export default function PageReviewPage() {
     if (savedComments) {
       setComments(JSON.parse(savedComments));
     }
+    
+    // Auto-run QA checks on page load
+    const hasAutoRun = localStorage.getItem(`page-qa-autorun-${pageId}`);
+    if (!hasAutoRun && page) {
+      // Small delay to ensure page is ready
+      setTimeout(() => {
+        handleRunQA();
+        localStorage.setItem(`page-qa-autorun-${pageId}`, 'true');
+      }, 1000);
+    }
   }, [pageId]);
 
   const saveComments = (newComments: Comment[]) => {
@@ -173,19 +184,43 @@ export default function PageReviewPage() {
       const response = await fetch('/api/scrape-page', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: `https://${page.pageUrl}` })
+        body: JSON.stringify({ url: page.pageUrl })
       });
 
       const result = await response.json();
 
       if (result.success) {
-        // Create QA error comments at random positions (in real implementation, would be based on actual element positions)
         const qaComments: Comment[] = [];
 
-        // Example QA issues
+        // Determine channel for QA checks (Meta = ACQ, Email = RTN)
+        const channel = page.channel === 'Email' ? 'RTN' : 'ACQ';
+        
+        // Run comprehensive QA checks from our library
+        const qaIssues = runQAChecks(result.data.textContent, channel);
+        
+        // Convert QA issues to comments with varying positions
+        qaIssues.forEach((issue, index) => {
+          const yPosition = 10 + (index * 12); // Spread them vertically
+          qaComments.push({
+            id: `qa-${Date.now()}-${index}`,
+            x: 50,
+            y: Math.min(yPosition, 90), // Keep within bounds
+            author: 'QA System',
+            authorInitials: 'QA',
+            text: issue.message,
+            taggedUsers: [],
+            timestamp: new Date().toLocaleString(),
+            resolved: false,
+            type: 'qa-error',
+            severity: issue.severity as 'critical' | 'warning' | 'info',
+            category: issue.category,
+          });
+        });
+
+        // Add additional basic checks
         if (result.data.metaDescription && result.data.metaDescription.length > 160) {
           qaComments.push({
-            id: `qa-${Date.now()}-1`,
+            id: `qa-${Date.now()}-meta`,
             x: 50,
             y: 5,
             author: 'QA System',
@@ -200,11 +235,26 @@ export default function PageReviewPage() {
           });
         }
 
-        if (result.data.h1Tags.length > 1) {
+        if (result.data.h1Tags.length === 0) {
           qaComments.push({
-            id: `qa-${Date.now()}-2`,
+            id: `qa-${Date.now()}-h1-missing`,
             x: 50,
-            y: 15,
+            y: 8,
+            author: 'QA System',
+            authorInitials: 'QA',
+            text: 'No H1 tag found on page',
+            taggedUsers: [],
+            timestamp: new Date().toLocaleString(),
+            resolved: false,
+            type: 'qa-error',
+            severity: 'critical',
+            category: 'SEO',
+          });
+        } else if (result.data.h1Tags.length > 1) {
+          qaComments.push({
+            id: `qa-${Date.now()}-h1-multiple`,
+            x: 50,
+            y: 8,
             author: 'QA System',
             authorInitials: 'QA',
             text: `Multiple H1 tags found (${result.data.h1Tags.length}). Should only have one.`,
@@ -220,7 +270,7 @@ export default function PageReviewPage() {
         const imagesWithoutAlt = result.data.images.filter((img: any) => !img.hasAlt);
         if (imagesWithoutAlt.length > 0) {
           qaComments.push({
-            id: `qa-${Date.now()}-3`,
+            id: `qa-${Date.now()}-alt`,
             x: 50,
             y: 40,
             author: 'QA System',
@@ -235,12 +285,16 @@ export default function PageReviewPage() {
           });
         }
 
-        // Add QA comments to existing comments
-        saveComments([...comments, ...qaComments]);
-        alert(`✅ QA Complete! Found ${qaComments.length} issues.`);
+        // Only add new QA comments, don't duplicate existing ones
+        const existingCommentTexts = comments.map(c => c.text);
+        const newQAComments = qaComments.filter(qc => !existingCommentTexts.includes(qc.text));
+        
+        if (newQAComments.length > 0) {
+          saveComments([...comments, ...newQAComments]);
+        }
       }
     } catch (error: any) {
-      alert(`Error: ${error.message}`);
+      console.error('QA Check Error:', error);
     } finally {
       setIsRunningQA(false);
     }
