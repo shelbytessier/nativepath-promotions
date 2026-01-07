@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { runQAChecks } from '@/lib/qa-checks';
+import { runQAChecks, defaultQARules } from '@/lib/qa-checks';
 
 interface Comment {
   id: string;
@@ -200,7 +200,10 @@ export default function PageReviewPage() {
         
         // Convert QA issues to comments with varying positions
         qaIssues.forEach((issue, index) => {
-          if (!issue.message) return; // Skip if no message
+          if (!issue.message || issue.passed) return; // Skip if no message or passed
+          
+          // Look up the rule to get severity and category
+          const rule = defaultQARules.find(r => r.id === issue.ruleId);
           
           const yPosition = 10 + (index * 12); // Spread them vertically
           qaComments.push({
@@ -214,8 +217,8 @@ export default function PageReviewPage() {
             timestamp: new Date().toLocaleString(),
             resolved: false,
             type: 'qa-error',
-            severity: (issue.severity || 'warning') as 'critical' | 'warning' | 'info',
-            category: issue.category || 'general',
+            severity: (rule?.severity || 'warning') as 'critical' | 'warning' | 'info',
+            category: rule?.category || 'general',
           });
         });
 
