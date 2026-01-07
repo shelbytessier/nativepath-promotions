@@ -111,33 +111,62 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
 
         {/* Tier Pricing Preview */}
         <div className="offer-modal-tiers-preview">
-          {offer.tiers.map((tier, idx) => (
-            <div key={idx} className="offer-modal-tier">
-              <div className="offer-modal-tier-label">{tier.label}</div>
-              {tier.originalPrice ? (
-                <div className="offer-modal-tier-price-row">
-                  <span className="offer-modal-tier-original">${tier.originalPrice.toFixed(2)}</span>
-                  <span className="offer-modal-tier-price">${tier.price.toFixed(2)}</span>
-                </div>
-              ) : (
-                <div className="offer-modal-tier-price">${tier.price.toFixed(2)}</div>
-              )}
-              <div className={`offer-modal-tier-shipping ${tier.shipping === 'FREE ship' ? 'free' : 'paid'}`}>
-                {tier.shipping}
-              </div>
-              {tier.gift && <div className="offer-modal-tier-gift">{tier.gift}</div>}
-              <div className="offer-modal-tier-totals">
-                {tier.save ? (
-                  <div className="offer-modal-tier-save">{tier.save}</div>
-                ) : (
-                  <div className="offer-modal-tier-total">
-                    Total: ${tier.price.toFixed(2)}{tier.shipping !== 'FREE ship' ? ' + shipping' : ''}
+          {offer.tiers.map((tier, idx) => {
+            const getImageForTier = (tierLabel: string) => {
+              if (offer.sku === 'COL-25' || offer.product.toLowerCase().includes('collagen')) {
+                if (tierLabel.toLowerCase().includes('single')) return '/images/products/collagen.png';
+                if (tierLabel.toLowerCase().includes('3')) return '/images/products/collagen-25s-3.png';
+                if (tierLabel.toLowerCase().includes('6')) return '/images/products/collagen-25s-6.png';
+              }
+              return null;
+            };
+
+            const tierImage = getImageForTier(tier.label);
+
+            return (
+              <div key={idx} className="offer-modal-tier">
+                <div className="offer-modal-tier-label">{tier.label}</div>
+                {tierImage && (
+                  <div style={{ 
+                    width: '80px', 
+                    height: '80px', 
+                    margin: '8px auto 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <img 
+                      src={tierImage} 
+                      alt={tier.label}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
                   </div>
                 )}
-                <div className="offer-modal-tier-per">{tier.perServing}</div>
+                {tier.originalPrice ? (
+                  <div className="offer-modal-tier-price-row">
+                    <span className="offer-modal-tier-original">${tier.originalPrice.toFixed(2)}</span>
+                    <span className="offer-modal-tier-price">${tier.price.toFixed(2)}</span>
+                  </div>
+                ) : (
+                  <div className="offer-modal-tier-price">${tier.price.toFixed(2)}</div>
+                )}
+                <div className={`offer-modal-tier-shipping ${tier.shipping === 'FREE ship' ? 'free' : 'paid'}`}>
+                  {tier.shipping}
+                </div>
+                {tier.gift && <div className="offer-modal-tier-gift">{tier.gift}</div>}
+                <div className="offer-modal-tier-totals">
+                  {tier.save ? (
+                    <div className="offer-modal-tier-save">{tier.save}</div>
+                  ) : (
+                    <div className="offer-modal-tier-total">
+                      Total: ${tier.price.toFixed(2)}{tier.shipping !== 'FREE ship' ? ' + shipping' : ''}
+                    </div>
+                  )}
+                  <div className="offer-modal-tier-per">{tier.perServing}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Blended Stats */}

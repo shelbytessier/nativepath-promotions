@@ -366,10 +366,7 @@ export default function OffersLibraryPage() {
                       margin: '8px auto 12px',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(255,255,255,0.03)',
-                      borderRadius: '6px',
-                      padding: '12px'
+                      justifyContent: 'center'
                     }}>
                       <img 
                         src="/images/products/collagen.png" 
@@ -400,10 +397,7 @@ export default function OffersLibraryPage() {
                       margin: '8px auto 12px',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(255,255,255,0.03)',
-                      borderRadius: '6px',
-                      padding: '12px'
+                      justifyContent: 'center'
                     }}>
                       <img 
                         src="/images/products/collagen-25s-3.png" 
@@ -438,10 +432,7 @@ export default function OffersLibraryPage() {
                       margin: '8px auto 12px',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(255,255,255,0.03)',
-                      borderRadius: '6px',
-                      padding: '12px'
+                      justifyContent: 'center'
                     }}>
                       <img 
                         src="/images/products/collagen-25s-6.png" 
