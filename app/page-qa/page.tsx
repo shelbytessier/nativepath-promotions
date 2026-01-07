@@ -257,7 +257,7 @@ export default function PageQAPage() {
           checks: newChecks,
           checksRun: defaultQARules.filter(r => r.enabled).length,
           issuesFound: newChecks.length,
-          status: criticalIssues > 0 ? 'critical' : hasIssues ? 'issues' : 'passed',
+          status: (criticalIssues > 0 ? 'critical' : hasIssues ? 'issues' : 'passed') as 'passed' | 'issues' | 'critical',
           lastChecked: 'Just now',
         };
       }
