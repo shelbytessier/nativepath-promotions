@@ -200,6 +200,8 @@ export default function PageReviewPage() {
         
         // Convert QA issues to comments with varying positions
         qaIssues.forEach((issue, index) => {
+          if (!issue.message) return; // Skip if no message
+          
           const yPosition = 10 + (index * 12); // Spread them vertically
           qaComments.push({
             id: `qa-${Date.now()}-${index}`,
@@ -212,8 +214,8 @@ export default function PageReviewPage() {
             timestamp: new Date().toLocaleString(),
             resolved: false,
             type: 'qa-error',
-            severity: issue.severity as 'critical' | 'warning' | 'info',
-            category: issue.category,
+            severity: (issue.severity || 'warning') as 'critical' | 'warning' | 'info',
+            category: issue.category || 'general',
           });
         });
 
