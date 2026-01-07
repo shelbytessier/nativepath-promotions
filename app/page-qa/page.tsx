@@ -710,24 +710,23 @@ export default function PageQAPage() {
                 </td>
                 <td style={{ padding: '14px 12px', color: '#666', fontSize: '12px' }}>{page.lastChecked}</td>
                 <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRunQA(page.id);
-                    }}
-                    style={{
-                      padding: '6px 12px',
-                      background: 'rgba(29,185,84,0.15)',
-                      border: '1px solid rgba(29,185,84,0.3)',
-                      borderRadius: '6px',
-                      color: '#1db954',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    ▶️ Run QA
-                  </button>
+                  <Link href={`/page-qa/review/${page.id}`}>
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        padding: '6px 12px',
+                        background: 'rgba(29,185,84,0.15)',
+                        border: '1px solid rgba(29,185,84,0.3)',
+                        borderRadius: '6px',
+                        color: '#1db954',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      📝 Review Page
+                    </button>
+                  </Link>
                 </td>
               </tr>
             ))}
