@@ -39,9 +39,9 @@ export default function PageManagerPage() {
 
   const pages: LandingPage[] = [
     {
-      id: '1',
-      name: 'VDay-26 | Meta Cold | Joint Pain Angle',
-      url: 'instapage.com/vday-meta-joint',
+      id: 'qa-1',
+      name: '7 Reasons Collagen LP (Facebook)',
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
       product: 'Collagen 25s',
       campaign: 'VDAY-26',
       campaignColor: '#ec4899',
@@ -52,7 +52,7 @@ export default function PageManagerPage() {
       leadAngle: ['Fear', 'Problem/Solution'],
       painPoint: 'Joint Pain',
       status: 'live',
-      qaStatus: 'qa-complete'
+      qaStatus: 'in-qa'
     },
     {
       id: '2',
@@ -364,7 +364,9 @@ export default function PageManagerPage() {
                       padding: '4px 10px', 
                       borderRadius: '4px', 
                       fontSize: '11px', 
-                      fontWeight: '600' 
+                      fontWeight: '600',
+                      whiteSpace: 'nowrap',
+                      display: 'inline-block'
                     }}>
                       {page.channelEmoji} {page.channel}
                     </span>
@@ -402,7 +404,8 @@ export default function PageManagerPage() {
                       fontSize: '11px', 
                       color: '#1db954', 
                       cursor: 'pointer',
-                      textDecoration: 'underline' 
+                      textDecoration: 'underline',
+                      whiteSpace: 'nowrap'
                     }}>
                       {page.offer}
                     </span>
@@ -453,6 +456,8 @@ export default function PageManagerPage() {
                         borderRadius: '12px',
                         fontSize: '11px',
                         fontWeight: '600',
+                        whiteSpace: 'nowrap',
+                        display: 'inline-block',
                         background: page.qaStatus === 'qa-complete' ? 'rgba(29,185,84,0.15)' : 
                                    page.qaStatus === 'qa-issues' ? 'rgba(239,68,68,0.15)' :
                                    page.qaStatus === 'in-qa' ? 'rgba(59,130,246,0.15)' :
