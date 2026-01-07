@@ -210,139 +210,114 @@ export default function PageReviewPage() {
     }
   };
 
+  // Helper function to find text position in iframe using postMessage
+  const findTextPositionInIframe = async (
+    searchText: string,
+    iframe: HTMLIFrameElement
+  ): Promise<{ x: number, y: number } | null> => {
+    return new Promise((resolve) => {
+      const messageHandler = (event: MessageEvent) => {
+        if (event.data.type === 'TEXT_POSITION') {
+          window.removeEventListener('message', messageHandler);
+          if (event.data.found) {
+            resolve({
+              x: event.data.x,
+              y: event.data.y
+            });
+          } else {
+            resolve(null);
+          }
+        }
+      };
+
+      window.addEventListener('message', messageHandler);
+
+      // Send message to iframe to find text
+      iframe.contentWindow?.postMessage({
+        type: 'FIND_TEXT',
+        text: searchText
+      }, '*');
+
+      // Timeout after 1 second
+      setTimeout(() => {
+        window.removeEventListener('message', messageHandler);
+        resolve(null);
+      }, 1000);
+    });
+  };
+
+  // Inject script into iframe to handle text finding
+  useEffect(() => {
+    // Disabled due to CORS restrictions
+    // The iframe cannot be accessed from different origin
+    /* if (iframeRef.current) {
+      const iframe = iframeRef.current;
+      
+      const injectScript = () => {
+        try {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+          if (!iframeDoc) return;
+
+          const script = iframeDoc.createElement('script');
+          script.textContent = `...`;
+          iframeDoc.head.appendChild(script);
+        } catch (e) {
+          console.log('Could not inject script (CORS):', e);
+        }
+      };
+
+      iframe.addEventListener('load', injectScript);
+      if (iframe.contentDocument?.readyState === 'complete') {
+        injectScript();
+      }
+
+      return () => {
+        iframe.removeEventListener('load', injectScript);
+      };
+    } */
+  }, []);
+
   const handleRunQA = async () => {
     setIsRunningQA(true);
 
     try {
-      // Fetch and analyze the page
-      const response = await fetch('/api/scrape-page', {
+      // Use Puppeteer to analyze the page with real DOM access
+      console.log('Starting Puppeteer analysis for:', page.pageUrl);
+      
+      const response = await fetch('/api/analyze-page', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: page.pageUrl })
+        body: JSON.stringify({ 
+          url: page.pageUrl,
+          checksToRun: {} // Can customize which checks to run
+        })
       });
 
       const result = await response.json();
 
-      if (result.success) {
+      if (result.success && result.issues) {
         const qaComments: Comment[] = [];
 
-        // Determine channel for QA checks (Meta = ACQ, Email = RTN)
-        const channel = page.channel === 'Email' ? 'RTN' : 'ACQ';
-        
-        // Run comprehensive QA checks from our library
-        const qaIssues = runQAChecks(result.data.textContent, channel);
-        
-        // Convert QA issues to comments with better positioning based on content
-        qaIssues.forEach((issue, index) => {
-          if (!issue.message || issue.passed) return; // Skip if no message or passed
-          
-          // Look up the rule to get severity and category
-          const rule = defaultQARules.find(r => r.id === issue.ruleId);
-          
-          // Try to determine position based on issue location or content
-          let yPosition = 15; // Default starting position
-          let xPosition = 50; // Center by default
-          
-          // If issue has location info, use it
-          if (issue.location) {
-            // Try to find the location in the text content
-            const locationIndex = result.data.textContent.toLowerCase().indexOf(issue.location.toLowerCase());
-            if (locationIndex !== -1) {
-              // Estimate position based on text location (rough approximation)
-              const textProgress = locationIndex / result.data.textContent.length;
-              yPosition = 10 + (textProgress * 80); // Distribute from 10% to 90% of page
-            }
-          } else {
-            // Distribute issues evenly down the page
-            yPosition = 15 + (index * 8);
-          }
-          
-          // Vary x position slightly for visual clarity
-          xPosition = 45 + (index % 3) * 5; // Alternate between 45%, 50%, 55%
-          
+        // Convert Puppeteer issues to comments with accurate positions
+        result.issues.forEach((issue: any, index: number) => {
           qaComments.push({
             id: `qa-${Date.now()}-${index}`,
-            x: xPosition,
-            y: Math.min(yPosition, 88), // Keep within bounds
+            x: issue.position.x,
+            y: issue.position.y,
             author: 'QA System',
             authorInitials: 'QA',
-            text: issue.message,
+            text: `${issue.type === 'spelling' || issue.type === 'disease-claim' || issue.type === 'address' ? 'AUTO' : 'MANUAL'}: ${issue.message}\n\nContext: ${issue.context}`,
             taggedUsers: [],
             timestamp: new Date().toLocaleString(),
             resolved: false,
             type: 'qa-error',
-            severity: (rule?.severity || 'warning') as 'critical' | 'warning' | 'info',
-            category: rule?.category || 'general',
+            severity: issue.severity,
+            category: issue.category,
           });
         });
 
-        // Add additional basic checks
-        if (result.data.metaDescription && result.data.metaDescription.length > 160) {
-          qaComments.push({
-            id: `qa-${Date.now()}-meta`,
-            x: 50,
-            y: 5,
-            author: 'QA System',
-            authorInitials: 'QA',
-            text: `Meta description too long: ${result.data.metaDescription.length} characters (recommended: 150-160)`,
-            taggedUsers: [],
-            timestamp: new Date().toLocaleString(),
-            resolved: false,
-            type: 'qa-error',
-            severity: 'warning',
-            category: 'SEO',
-          });
-        }
-
-        if (result.data.h1Tags.length === 0) {
-          qaComments.push({
-            id: `qa-${Date.now()}-h1-missing`,
-            x: 50,
-            y: 8,
-            author: 'QA System',
-            authorInitials: 'QA',
-            text: 'No H1 tag found on page',
-            taggedUsers: [],
-            timestamp: new Date().toLocaleString(),
-            resolved: false,
-            type: 'qa-error',
-            severity: 'critical',
-            category: 'SEO',
-          });
-        } else if (result.data.h1Tags.length > 1) {
-          qaComments.push({
-            id: `qa-${Date.now()}-h1-multiple`,
-            x: 50,
-            y: 8,
-            author: 'QA System',
-            authorInitials: 'QA',
-            text: `Multiple H1 tags found (${result.data.h1Tags.length}). Should only have one.`,
-            taggedUsers: [],
-            timestamp: new Date().toLocaleString(),
-            resolved: false,
-            type: 'qa-error',
-            severity: 'warning',
-            category: 'SEO',
-          });
-        }
-
-        const imagesWithoutAlt = result.data.images.filter((img: any) => !img.hasAlt);
-        if (imagesWithoutAlt.length > 0) {
-          qaComments.push({
-            id: `qa-${Date.now()}-alt`,
-            x: 50,
-            y: 40,
-            author: 'QA System',
-            authorInitials: 'QA',
-            text: `${imagesWithoutAlt.length} image(s) missing alt text`,
-            taggedUsers: [],
-            timestamp: new Date().toLocaleString(),
-            resolved: false,
-            type: 'qa-error',
-            severity: 'warning',
-            category: 'Accessibility',
-          });
-        }
+        // Puppeteer has already found all issues with accurate positions
+        console.log('Puppeteer found', qaComments.length, 'issues');
 
         // Only add new QA comments, don't duplicate existing ones
         const existingCommentTexts = comments.map(c => c.text);
@@ -761,7 +736,7 @@ export default function PageReviewPage() {
           
           <iframe
             ref={iframeRef}
-            src={page.pageUrl}
+            src={`/api/proxy-page?url=${encodeURIComponent(page.pageUrl)}`}
             onLoad={() => setIframeLoaded(true)}
             onError={() => {
               console.error('Iframe failed to load');

@@ -124,6 +124,16 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
                   objectFit: 'contain'
                 }}
               />
+            ) : offer.sku === 'LIPO-30' || offer.product.toLowerCase().includes('liposomal') || offer.product.toLowerCase().includes('vitamin c') ? (
+              <img 
+                src="/images/products/Lipo-1.png" 
+                alt={offer.product}
+                style={{ 
+                  width: '48px', 
+                  height: '48px', 
+                  objectFit: 'contain'
+                }}
+              />
             ) : (
               offer.productIcon
             )}
@@ -153,6 +163,10 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
                 if (tierLabel.toLowerCase().includes('single')) return '/images/products/collagen.png';
                 if (tierLabel.toLowerCase().includes('3')) return '/images/products/collagen-25s-3.png';
                 if (tierLabel.toLowerCase().includes('6')) return '/images/products/collagen-25s-6.png';
+              } else if (offer.sku === 'LIPO-30' || offer.product.toLowerCase().includes('liposomal') || offer.product.toLowerCase().includes('vitamin c')) {
+                if (tierLabel.toLowerCase().includes('single')) return '/images/products/Lipo-1.png';
+                if (tierLabel.toLowerCase().includes('3')) return '/images/products/Lipo-3.png';
+                if (tierLabel.toLowerCase().includes('6')) return '/images/products/Lipo-6.png';
               }
               return null;
             };
@@ -342,45 +356,51 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
               {filteredPages.map((page, idx) => (
                 <div key={idx} className="offer-page-item" data-channel={page.channelType}>
                   <div style={{ flex: 1 }}>
-                    <div className="offer-page-name" style={{ fontWeight: '600', marginBottom: '4px' }}>{page.name}</div>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
+                      <span style={{ 
+                        background: page.campaignColor, 
+                        color: '#fff', 
+                        padding: '4px 10px', 
+                        borderRadius: '6px', 
+                        fontWeight: '700',
+                        fontSize: '11px',
+                        letterSpacing: '0.3px'
+                      }}>
+                        {page.campaign}
+                      </span>
+                      <span style={{ 
+                        color: '#888', 
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}>
+                        <span>{page.channelEmoji}</span>
+                        <span>{page.channel}</span>
+                      </span>
+                    </div>
+                    <div className="offer-page-name" style={{ fontWeight: '600', marginBottom: '6px', color: '#fff', fontSize: '14px' }}>{page.name}</div>
                     <a 
                       href={`https://${page.url}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       style={{ 
-                        fontSize: '11px', 
+                        fontSize: '12px', 
                         color: '#3b82f6',
                         textDecoration: 'none',
-                        display: 'block',
-                        marginBottom: '6px'
+                        display: 'block'
                       }}
                       onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
                       onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
                     >
                       {page.url}
                     </a>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '11px' }}>
-                      <span style={{ 
-                        background: page.campaignColor, 
-                        color: '#000', 
-                        padding: '2px 8px', 
-                        borderRadius: '4px', 
-                        fontWeight: '600',
-                        fontSize: '10px'
-                      }}>
-                        {page.campaign}
-                      </span>
-                      <span style={{ color: '#888' }}>
-                        {page.channelEmoji} {page.channel}
-                      </span>
-                    </div>
                   </div>
                   <div className="offer-page-right">
                     <span className={`offer-page-status ${page.status === 'Live' ? 'live' : 'dev'}`}>
                       {page.status}
                     </span>
-                    <span className="offer-page-view">View →</span>
                   </div>
                 </div>
               ))}

@@ -47,27 +47,6 @@ const mockOffers: Offer[] = [
     pagesCount: 3,
   },
   {
-    id: 'VDAY-HYD30',
-    productName: 'Hydrate',
-    productCode: 'HYD-30',
-    servings: 30,
-    emoji: '💧',
-    status: 'active',
-    channels: [
-      { name: 'Web', active: true },
-      { name: 'Amazon', active: true },
-      { name: 'Shopify', active: true },
-    ],
-    campaign: 'valentines',
-    tiers: {
-      single: { price: 29.99, shipping: 9.00 },
-      threePack: { originalPrice: 89.97, price: 74.97, gift: 'Shaker', savePercent: 28 },
-      sixPack: { originalPrice: 179.94, price: 119.94, gift: 'Shaker', savePercent: 39 },
-    },
-    blendedMargin: 68,
-    pagesCount: 2,
-  },
-  {
     id: 'SPRNG-LIPO30',
     productName: 'Liposomal Vitamin C',
     productCode: 'LIPO-30',
@@ -87,6 +66,27 @@ const mockOffers: Offer[] = [
     },
     blendedMargin: 69,
     pagesCount: 1,
+  },
+  {
+    id: 'VDAY-HYD30',
+    productName: 'Hydrate',
+    productCode: 'HYD-30',
+    servings: 30,
+    emoji: '💧',
+    status: 'active',
+    channels: [
+      { name: 'Web', active: true },
+      { name: 'Amazon', active: true },
+      { name: 'Shopify', active: true },
+    ],
+    campaign: 'valentines',
+    tiers: {
+      single: { price: 29.99, shipping: 9.00 },
+      threePack: { originalPrice: 89.97, price: 74.97, gift: 'Shaker', savePercent: 28 },
+      sixPack: { originalPrice: 179.94, price: 119.94, gift: 'Shaker', savePercent: 39 },
+    },
+    blendedMargin: 68,
+    pagesCount: 2,
   },
 ];
 

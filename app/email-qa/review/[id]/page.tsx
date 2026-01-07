@@ -59,7 +59,10 @@ export default function EmailReviewPage() {
   useEffect(() => {
     const storedData = localStorage.getItem(`email-data-${emailId}`);
     if (storedData) {
-      setEmail(JSON.parse(storedData));
+      const data = JSON.parse(storedData);
+      setEmail(data);
+      setIsDemoMode(data.isDemoMode || false);
+      setOriginalUrl(data.originalUrl || '');
     } else {
       setEmail(mockEmails[emailId]);
     }
@@ -77,6 +80,10 @@ export default function EmailReviewPage() {
   const [pageLoaded, setPageLoaded] = useState(false);
   const [isRunningQA, setIsRunningQA] = useState(false);
   const [activeView, setActiveView] = useState<'split' | 'email' | 'page'>('split');
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [originalUrl, setOriginalUrl] = useState('');
+  const [emailHtmlContent, setEmailHtmlContent] = useState('');
+  const [pageHtmlContent, setPageHtmlContent] = useState('');
 
   useEffect(() => {
     const savedComments = localStorage.getItem(`email-comments-${emailId}`);
@@ -84,15 +91,127 @@ export default function EmailReviewPage() {
       setComments(JSON.parse(savedComments));
     }
     
-    // Auto-run QA checks on load
-    const hasAutoRun = localStorage.getItem(`email-qa-autorun-${emailId}`);
-    if (!hasAutoRun && email) {
-      setTimeout(() => {
-        handleRunQA();
-        localStorage.setItem(`email-qa-autorun-${emailId}`, 'true');
-      }, 1000);
+    // Load email HTML content
+    if (email) {
+      loadEmailContent();
     }
-  }, [emailId]);
+  }, [emailId, email]);
+  
+  const loadEmailContent = async () => {
+    try {
+      // Use demo email HTML (since Gmail links can't be scraped)
+      const demoEmailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Save $81 on Collagen Today!</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <tr>
+              <td style="padding: 20px; text-align: center; background-color: #1db954;">
+                <svg width="160" height="32" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg">
+                  <text x="10" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ffffff">NativePath</text>
+                </svg>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 40px 30px;">
+                <h1 style="font-size: 28px; color: #333; margin: 0 0 20px 0;">Save $81 on Collagen Today!</h1>
+                <p style="font-size: 16px; line-height: 1.6; color: #666; margin: 0 0 20px 0;">
+                  Hi there,
+                </p>
+                <p style="font-size: 16px; line-height: 1.6; color: #666; margin: 0 0 20px 0;">
+                  For a limited time, save up to $81 on our best-selling Collagen Peptides. This is our biggest discount of the year!
+                </p>
+                <p style="font-size: 16px; line-height: 1.6; color: #666; margin: 0 0 20px 0;">
+                  Don't miss out on this incredible offer to support your joint health, skin elasticity, and overall wellness.
+                </p>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                  <tr>
+                    <td align="center">
+                      <img src="https://via.placeholder.com/400x300/f0f0f0/666666?text=Collagen+Product+Image" alt="NativePath Collagen" style="max-width: 100%; height: auto; border-radius: 8px;">
+                    </td>
+                  </tr>
+                </table>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="center">
+                      <a href="https://health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8" 
+                         style="display: inline-block; padding: 16px 40px; background-color: #1db954; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 18px; border-radius: 4px;">
+                        Shop Now & Save $81
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="font-size: 14px; line-height: 1.6; color: #999; margin: 30px 0 0 0;">
+                  Free shipping on all orders. 365-day money-back guarantee.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 20px 30px; background-color: #f9f9f9; border-top: 1px solid #e0e0e0;">
+                <p style="font-size: 12px; color: #999; margin: 0 0 10px 0;">
+                  As always-to being & staying on The Path together,<br>
+                  Dr. Chad Walding, DPT, ISSA Nutrition Specialist, Co-Founder NativePath
+                </p>
+                <p style="font-size: 11px; color: #999; margin: 20px 0 0 0;">
+                  *These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure or prevent any disease.
+                </p>
+                <p style="font-size: 11px; color: #999; margin: 10px 0 0 0;">
+                  NativePath<br>
+                  1395 Brickell Ave. Suite 800<br>
+                  Miami, FL 33131
+                </p>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `;
+      
+      setEmailHtmlContent(demoEmailHtml);
+      setEmailLoaded(true);
+      
+      // Fetch linked page HTML
+      if (email.linkedPages && email.linkedPages.length > 0) {
+        try {
+          const pageUrl = email.linkedPages[0].url;
+          const pageResponse = await fetch('/api/scrape-page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: pageUrl })
+          });
+          
+          const pageResult = await pageResponse.json();
+          
+          if (pageResult.success && pageResult.data.html) {
+            setPageHtmlContent(pageResult.data.html);
+          } else {
+            // Fallback: use iframe with direct URL if scraping fails
+            console.log('Scraping failed, will use direct iframe');
+          }
+        } catch (error) {
+          console.error('Error fetching page:', error);
+        } finally {
+          setPageLoaded(true);
+        }
+      }
+      
+      // Auto-run QA checks after content is loaded
+      const hasAutoRun = localStorage.getItem(`email-qa-autorun-${emailId}`);
+      if (!hasAutoRun) {
+        setTimeout(() => {
+          handleRunQA();
+          localStorage.setItem(`email-qa-autorun-${emailId}`, 'true');
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error loading email content:', error);
+    }
+  };
 
   const saveComments = (newComments: Comment[]) => {
     setComments(newComments);
@@ -151,19 +270,17 @@ export default function EmailReviewPage() {
     setIsRunningQA(true);
 
     try {
-      // Fetch email content
-      const emailResponse = await fetch('/api/scrape-page', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: email.emailUrl })
-      });
-
-      const emailResult = await emailResponse.json();
       const qaComments: Comment[] = [];
 
-      if (emailResult.success) {
+      // Run QA checks on email HTML content
+      if (emailHtmlContent) {
+        // Extract text from HTML for QA checks
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(emailHtmlContent, 'text/html');
+        const emailText = doc.body.textContent || '';
+        
         // Run RTN (Email) QA checks
-        const qaIssues = runQAChecks(emailResult.data.textContent, 'RTN');
+        const qaIssues = runQAChecks(emailText, 'RTN');
         
         qaIssues.forEach((issue, index) => {
           if (!issue.message || issue.passed) return;
@@ -190,43 +307,36 @@ export default function EmailReviewPage() {
       }
 
       // Check linked pages
-      if (email.linkedPages && email.linkedPages.length > 0) {
-        for (const linkedPage of email.linkedPages) {
-          const pageResponse = await fetch('/api/scrape-page', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: linkedPage.url })
+      if (pageHtmlContent) {
+        // Extract text from HTML for QA checks
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(pageHtmlContent, 'text/html');
+        const pageText = doc.body.textContent || '';
+        
+        const pageQAIssues = runQAChecks(pageText, 'ACQ');
+        
+        pageQAIssues.forEach((issue, index) => {
+          if (!issue.message || issue.passed) return;
+          
+          const rule = defaultQARules.find(r => r.id === issue.ruleId);
+          const yPosition = 10 + (index * 12);
+          
+          qaComments.push({
+            id: `qa-page-${Date.now()}-${index}`,
+            x: 50,
+            y: Math.min(yPosition, 90),
+            author: 'QA System',
+            authorInitials: 'QA',
+            text: `[PAGE] ${issue.message}`,
+            taggedUsers: [],
+            timestamp: new Date().toLocaleString(),
+            resolved: false,
+            type: 'qa-error',
+            severity: (rule?.severity || 'warning') as 'critical' | 'warning' | 'info',
+            category: rule?.category || 'general',
+            target: 'page',
           });
-
-          const pageResult = await pageResponse.json();
-
-          if (pageResult.success) {
-            const pageQAIssues = runQAChecks(pageResult.data.textContent, 'ACQ');
-            
-            pageQAIssues.forEach((issue, index) => {
-              if (!issue.message || issue.passed) return;
-              
-              const rule = defaultQARules.find(r => r.id === issue.ruleId);
-              const yPosition = 10 + (index * 12);
-              
-              qaComments.push({
-                id: `qa-page-${Date.now()}-${index}`,
-                x: 50,
-                y: Math.min(yPosition, 90),
-                author: 'QA System',
-                authorInitials: 'QA',
-                text: `[PAGE] ${issue.message}`,
-                taggedUsers: [],
-                timestamp: new Date().toLocaleString(),
-                resolved: false,
-                type: 'qa-error',
-                severity: (rule?.severity || 'warning') as 'critical' | 'warning' | 'info',
-                category: rule?.category || 'general',
-                target: 'page',
-              });
-            });
-          }
-        }
+        });
       }
 
       // Only add new QA comments
@@ -293,6 +403,26 @@ export default function EmailReviewPage() {
           <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Subject: {email.subject}</div>
           <div style={{ fontSize: '12px', color: '#888' }}>{email.campaign} • {email.channel}</div>
         </div>
+
+        {/* Demo Mode Banner */}
+        {isDemoMode && (
+          <div style={{
+            padding: '12px 16px',
+            background: 'rgba(59,130,246,0.1)',
+            border: '1px solid rgba(59,130,246,0.3)',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            fontSize: '11px',
+            color: '#3b82f6',
+            lineHeight: '1.4',
+          }}>
+            <div style={{ fontWeight: '600', marginBottom: '4px' }}>🔒 Demo Mode</div>
+            <div style={{ fontSize: '10px', color: '#888' }}>
+              Email requires authentication. Using demo content.
+              <br />
+              Original: <span style={{ color: '#666', wordBreak: 'break-all' }}>{originalUrl}</span>
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -665,13 +795,14 @@ export default function EmailReviewPage() {
               )}
               
               <iframe
-                src={email.emailUrl}
+                srcDoc={emailHtmlContent || '<div style="padding: 40px; text-align: center; color: #888;">Loading email content...</div>'}
                 onLoad={() => setEmailLoaded(true)}
                 style={{
                   width: '100%',
                   height: '100%',
                   border: 'none',
                   pointerEvents: isAddingComment ? 'none' : 'auto',
+                  background: '#fff',
                 }}
               />
 
@@ -755,13 +886,17 @@ export default function EmailReviewPage() {
               )}
               
               <iframe
-                src={email.linkedPages[0].url}
+                {...(pageHtmlContent 
+                  ? { srcDoc: pageHtmlContent }
+                  : { src: email.linkedPages && email.linkedPages.length > 0 ? email.linkedPages[0].url : '' }
+                )}
                 onLoad={() => setPageLoaded(true)}
                 style={{
                   width: '100%',
                   height: '100%',
                   border: 'none',
                   pointerEvents: isAddingComment ? 'none' : 'auto',
+                  background: '#fff',
                 }}
               />
 

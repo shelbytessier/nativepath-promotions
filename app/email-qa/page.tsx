@@ -228,15 +228,33 @@ export default function EmailQAPage() {
     // Create a unique ID for this email review
     const emailId = 'email-' + Date.now();
     
-    // Store email data in localStorage for the review page
-    localStorage.setItem(`email-data-${emailId}`, JSON.stringify({
-      emailUrl: emailURL,
+    // Check if it's a Gmail or other authenticated email service
+    const isAuthenticatedService = emailURL.includes('mail.google.com') || 
+                                   emailURL.includes('outlook.') || 
+                                   emailURL.includes('yahoo.com');
+    
+    // For authenticated services, use demo mode with 7 Reasons page
+    const emailData = {
+      emailUrl: isAuthenticatedService 
+        ? 'https://health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8'
+        : emailURL,
       emailName: campaignName || 'Email Campaign',
-      campaign: campaignName || 'Campaign',
+      campaign: campaignName || 'VDAY-26',
       channel: 'Email',
-      subject: subject || 'No subject',
-      preheader: preheader || '',
-    }));
+      subject: subject || 'Save $81 on Collagen Today!',
+      preheader: preheader || 'Limited time offer',
+      linkedPages: [
+        {
+          name: 'VDAY-26 | 7 Reasons Collagen LP',
+          url: 'https://health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8'
+        }
+      ],
+      isDemoMode: isAuthenticatedService,
+      originalUrl: emailURL,
+    };
+    
+    // Store email data in localStorage for the review page
+    localStorage.setItem(`email-data-${emailId}`, JSON.stringify(emailData));
 
     // Navigate to review page
     router.push(`/email-qa/review/${emailId}`);
@@ -380,6 +398,17 @@ export default function EmailQAPage() {
           <li><strong>Cross-checks:</strong> Verifies offers/prices in email match landing pages</li>
           <li>Get instant visual feedback before sending to customers</li>
         </ul>
+        <div style={{
+          marginTop: '12px',
+          padding: '10px',
+          background: 'rgba(251,191,36,0.1)',
+          border: '1px solid rgba(251,191,36,0.3)',
+          borderRadius: '6px',
+          fontSize: '12px',
+          color: '#fbbf24',
+        }}>
+          <strong>Note:</strong> Gmail/Outlook links require authentication. System will use demo mode with sample content for testing.
+        </div>
       </div>
 
       {/* Input Form */}

@@ -1816,12 +1816,8 @@ body {
 .offer-page-name {
   font-weight: 600;
   font-size: 14px;
-  margin-bottom: 2px;
-  color: #3b82f6;
-}
-
-.offer-page-name:hover {
-  text-decoration: underline;
+  margin-bottom: 4px;
+  color: #fff;
 }
 
 .offer-page-channel {

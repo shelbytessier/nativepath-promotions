@@ -587,12 +587,24 @@ export const defaultQARules: QACheckRule[] = [
 // QA Check Functions (simplified implementations)
 export const qaCheckFunctions = {
   checkThePathCapitalization: (content: string): QACheckResult => {
-    const incorrectPath = /the path(?![A-Z])/g.test(content.toLowerCase());
+    // First check if "the path" exists at all
+    const hasThePath = /the path/i.test(content);
+    if (!hasThePath) {
+      return {
+        ruleId: 'gen-the-path-capitalized',
+        passed: true,
+        message: undefined,
+        location: 'Content scan',
+      };
+    }
+    
+    // If it exists, check if it's properly capitalized
+    const incorrectPath = /the path/g.test(content) && !/The Path/g.test(content);
     return {
       ruleId: 'gen-the-path-capitalized',
       passed: !incorrectPath,
       message: incorrectPath ? '"The Path" should always be capitalized' : undefined,
-      location: 'Content scan',
+      location: 'the path',
     };
   },
 
@@ -603,7 +615,7 @@ export const qaCheckFunctions = {
       ruleId: 'gen-no-disease-claims',
       passed: !found,
       message: found ? `Disease claim detected: "${found}"` : undefined,
-      location: 'Content scan',
+      location: found || 'Content scan',
     };
   },
 
@@ -618,22 +630,26 @@ export const qaCheckFunctions = {
   },
 
   checkPricingStructure: (content: string): QACheckResult => {
-    // This would need to integrate with the actual pricing spreadsheet
+    // Look for pricing in content
+    const hasPricing = /\$\d+|\d+% off|save|discount/i.test(content);
     return {
       ruleId: 'gen-pricing-verification',
-      passed: true,
-      message: 'Manual verification required: Check Pricing Structures By Product document',
-      location: 'Pricing section',
+      passed: false, // Always show for manual verification
+      message: hasPricing ? 'Manual check: Verify pricing matches Pricing Structures document' : undefined,
+      location: 'pricing',
     };
   },
 
   checkUpToLanguage: (content: string): QACheckResult => {
     const hasUpTo = /up to|as low as|select bundles/i.test(content);
+    const hasSavings = /save|\$\d+|discount|% off/i.test(content);
+    
+    // Only flag if there are savings claims but no "up to" language
     return {
       ruleId: 'gen-up-to-language',
-      passed: hasUpTo,
-      message: hasUpTo ? undefined : 'Add "up to" or "as low as" language',
-      location: 'CTA/Copy',
+      passed: !hasSavings || hasUpTo,
+      message: hasSavings && !hasUpTo ? 'Add "up to" or "as low as" language to savings claims' : undefined,
+      location: 'save',
     };
   },
 
@@ -644,36 +660,40 @@ export const qaCheckFunctions = {
       ruleId: 'gen-testimonial-disclaimer',
       passed: !hasTestimonial || hasDisclaimer,
       message: hasTestimonial && !hasDisclaimer ? 'Add testimonial disclaimer: (Customer results have not been independently verified. Results may vary.)' : undefined,
-      location: 'Testimonials',
+      location: hasTestimonial ? 'testimonial' : 'Testimonials',
     };
   },
 
   checkFloridaAddress: (content: string): QACheckResult => {
     const hasFLAddress = /1395 Brickell Ave|Miami, FL 33131/i.test(content);
     const hasCAAddress = /California|CA \d{5}/i.test(content);
+    const hasAnyAddress = /\d+ .+ (Ave|Street|St|Blvd|Road|Rd)/i.test(content);
+    
     return {
       ruleId: 'gen-fl-address',
       passed: hasFLAddress && !hasCAAddress,
-      message: hasCAAddress ? 'Update to FL address: 1395 Brickell Ave. Suite 800 Miami, FL 33131' : !hasFLAddress ? 'Add FL address' : undefined,
-      location: 'Footer',
+      message: hasCAAddress ? 'Update to FL address: 1395 Brickell Ave. Suite 800 Miami, FL 33131' : (hasAnyAddress && !hasFLAddress) ? 'Verify FL address is correct: 1395 Brickell Ave. Suite 800 Miami, FL 33131' : undefined,
+      location: hasCAAddress ? 'California' : hasFLAddress ? 'Miami' : hasAnyAddress ? 'address' : 'Footer',
     };
   },
 
   checkFreeShipping: (content: string): QACheckResult => {
+    const hasCheckout = /checkout|order|cart|buy now|shop now/i.test(content);
     return {
       ruleId: 'gen-free-shipping-checkout',
-      passed: true,
-      message: 'Manual verification required: Test checkout to ensure free shipping',
-      location: 'Checkout',
+      passed: false, // Always show for manual verification
+      message: hasCheckout ? 'Manual check: Test checkout to ensure free shipping works' : undefined,
+      location: 'checkout',
     };
   },
 
   checkMathAccuracy: (content: string): QACheckResult => {
+    const hasMath = /\$\d+|\d+% off|save \$\d+|total/i.test(content);
     return {
       ruleId: 'gen-math-accuracy',
-      passed: true,
-      message: 'Manual verification required: Verify all math at checkout',
-      location: 'Pricing/Checkout',
+      passed: false, // Always show for manual verification
+      message: hasMath ? 'Manual check: Verify all math calculations are accurate' : undefined,
+      location: 'pricing',
     };
   },
 
@@ -681,7 +701,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-from-name',
       passed: true,
-      message: 'Manual verification required: Check From Name matches copy doc',
+      message: undefined, // Only show if actual error found
       location: 'Email header',
     };
   },
@@ -690,7 +710,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-subject-preview',
       passed: true,
-      message: 'Manual verification required: Check Subject & Preview Text',
+      message: undefined, // Manual check only
       location: 'Email header',
     };
   },
@@ -699,7 +719,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-header-image',
       passed: true,
-      message: 'Manual verification required: Verify correct NativePath header image',
+      message: undefined, // Manual check: Verify correct NativePath header image',
       location: 'Email header',
     };
   },
@@ -720,7 +740,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-mobile-desktop',
       passed: true,
-      message: 'Manual verification required: Test on mobile and desktop',
+      message: undefined, // Manual check: Test on mobile and desktop',
       location: 'Display',
     };
   },
@@ -739,7 +759,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-employee-reviews',
       passed: true,
-      message: 'Manual verification required: Check employee reviews have company affiliation noted',
+      message: undefined, // Manual check: Check employee reviews have company affiliation noted',
       location: 'Reviews',
     };
   },
@@ -748,7 +768,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-links-working',
       passed: true,
-      message: 'Manual verification required: Test all links and verify C1 parameters',
+      message: undefined, // Manual check: Test all links and verify C1 parameters',
       location: 'Links',
     };
   },
@@ -757,7 +777,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-abandon-code',
       passed: true,
-      message: 'Manual verification required: Inspect page for abandon code',
+      message: undefined, // Manual check: Inspect page for abandon code',
       location: 'Page code',
     };
   },
@@ -766,7 +786,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-lp-personalization',
       passed: true,
-      message: 'Manual verification required: Check [fn] personalization on landing page',
+      message: undefined, // Manual check: Check [fn] personalization on landing page',
       location: 'Landing page',
     };
   },
@@ -775,7 +795,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-pricing-congruent',
       passed: true,
-      message: 'Manual verification required: Verify pricing matches email copy',
+      message: undefined, // Manual check: Verify pricing matches email copy',
       location: 'Pricing',
     };
   },
@@ -784,7 +804,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-test-order',
       passed: true,
-      message: 'Manual verification required: Place test order with test credit card',
+      message: undefined, // Manual check: Place test order with test credit card',
       location: 'Checkout',
     };
   },
@@ -793,7 +813,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-upsells-downsells',
       passed: true,
-      message: 'Manual verification required: Test entire sales funnel',
+      message: undefined, // Manual check: Test entire sales funnel',
       location: 'Sales funnel',
     };
   },
@@ -811,7 +831,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'email-website-no-hyperlink',
       passed: true,
-      message: 'Manual review: If website mentioned (not main CTA), ensure it\'s not hyperlinked',
+      message: undefined, // Manual: If website mentioned (not main CTA), ensure it\'s not hyperlinked',
       location: 'Links',
     };
   },
@@ -880,7 +900,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'sms-qa-landing-page',
       passed: true,
-      message: 'Manual verification required: QA landing page using email checklist',
+      message: undefined, // Manual check: QA landing page using email checklist',
       location: 'Landing page',
     };
   },
@@ -889,7 +909,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-oxford-comma',
       passed: true,
-      message: 'Manual review: Verify oxford comma usage in lists',
+      message: undefined, // Manual: Verify oxford comma usage in lists',
       location: 'Content',
     };
   },
@@ -906,11 +926,13 @@ export const qaCheckFunctions = {
   },
 
   checkAOVCopy: (content: string): QACheckResult => {
+    // Look for pricing/offer section
+    const hasPricing = /\$\d+|\d+% off|save|discount/i.test(content);
     return {
       ruleId: 'lp-aov-copy',
-      passed: true,
-      message: 'Manual review: Ensure AOV copy uses highest unit value',
-      location: 'Product copy',
+      passed: false, // Always show for manual verification
+      message: hasPricing ? 'Manual check: Ensure AOV copy uses highest unit value' : undefined,
+      location: 'pricing',
     };
   },
 
@@ -918,7 +940,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-new-labels',
       passed: true,
-      message: 'Manual verification required: Verify new label designs are used',
+      message: undefined, // Manual check: Verify new label designs are used',
       location: 'Product images',
     };
   },
@@ -927,7 +949,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-sans-serif-font',
       passed: true,
-      message: 'Manual review: Verify sans serif font (Poppins) is used',
+      message: undefined, // Manual: Verify sans serif font (Poppins) is used',
       location: 'Page styling',
     };
   },
@@ -936,7 +958,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-customer-review-dates',
       passed: true,
-      message: 'Manual review: Ensure customer reviews are not older than 1.5 years',
+      message: undefined, // Manual: Ensure customer reviews are not older than 1.5 years',
       location: 'Reviews',
     };
   },
@@ -945,7 +967,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-references-ingredients',
       passed: true,
-      message: 'Manual verification required: Verify references/ingredients match label',
+      message: undefined, // Manual check: Verify references/ingredients match label',
       location: 'References section',
     };
   },
@@ -964,7 +986,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-abandon-code-rtn',
       passed: true,
-      message: 'Manual verification required: Check abandon code is present (RTN only)',
+      message: undefined, // Manual check: Check abandon code is present (RTN only)',
       location: 'Page code',
     };
   },
@@ -973,7 +995,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'lp-no-abandon-code-acq',
       passed: true,
-      message: 'Manual verification required: Ensure NO abandon codes on ACQ pages',
+      message: undefined, // Manual check: Ensure NO abandon codes on ACQ pages',
       location: 'Page code',
     };
   },
@@ -1040,7 +1062,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'prod-berberine-labels',
       passed: true,
-      message: 'Manual verification required: Check Berberine labels have bitter melon (not oregon grape)',
+      message: undefined, // Manual check: Check Berberine labels have bitter melon (not oregon grape)',
       location: 'Product labels',
     };
   },
@@ -1049,7 +1071,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'prod-turmeric-labels',
       passed: true,
-      message: 'Manual verification required: Check Total Turmeric labels have Boswellia (not Black Seed Oil)',
+      message: undefined, // Manual check: Check Total Turmeric labels have Boswellia (not Black Seed Oil)',
       location: 'Product labels',
     };
   },
@@ -1058,7 +1080,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'prod-balance-labels',
       passed: true,
-      message: 'Manual verification required: Check Update Balance labels include Ashwagandha',
+      message: undefined, // Manual check: Check Update Balance labels include Ashwagandha',
       location: 'Product labels',
     };
   },
@@ -1067,7 +1089,7 @@ export const qaCheckFunctions = {
     return {
       ruleId: 'acq-place-all-orders',
       passed: true,
-      message: 'Manual verification required: Place order on EVERY product option (ACQ)',
+      message: undefined, // Manual check: Place order on EVERY product option (ACQ)',
       location: 'Checkout',
     };
   },
