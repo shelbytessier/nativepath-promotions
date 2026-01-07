@@ -94,6 +94,15 @@ export default function OffersLibraryPage() {
   const expiredCount = mockOffers.filter(o => o.status === 'expired').length;
   const pagesUsingCount = mockOffers.reduce((sum, o) => sum + o.pagesCount, 0);
 
+  const hasActiveFilters = searchTerm !== '' || campaignFilter !== 'all' || productFilter !== 'all' || statusFilter !== 'all';
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setCampaignFilter('all');
+    setProductFilter('all');
+    setStatusFilter('all');
+  };
+
   const handleOfferClick = (offer: Offer) => {
     const modalData = {
       id: offer.id,
@@ -269,6 +278,33 @@ export default function OffersLibraryPage() {
           </select>
         </div>
 
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            style={{
+              padding: '10px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              color: '#888',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '6px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '12px',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.color = '#888';
+            }}
+          >
+            ✕ Clear Filters
+          </button>
+        )}
+
         <button 
           onClick={() => setIsCreateModalOpen(true)}
           style={{ 
@@ -279,7 +315,17 @@ export default function OffersLibraryPage() {
             borderRadius: '6px', 
             fontWeight: 600, 
             cursor: 'pointer', 
-            marginLeft: 'auto'
+            marginLeft: hasActiveFilters ? '12px' : 'auto',
+            transition: 'all 0.2s',
+            boxShadow: '0 2px 8px rgba(29, 185, 84, 0.3)'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 185, 84, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(29, 185, 84, 0.3)';
           }}
         >
           + Create Offer

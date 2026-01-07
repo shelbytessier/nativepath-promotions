@@ -1,8 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
+  const router = useRouter();
+
   return (
     <div style={{ padding: '32px' }}>
       {/* Header */}
@@ -17,36 +20,59 @@ export default function Dashboard() {
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <Link href="/testing" style={{ textDecoration: 'none' }}>
-            <button style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              padding: '12px 20px', 
-              background: 'rgba(255,255,255,0.05)', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              borderRadius: '6px', 
-              color: '#fff', 
-              fontSize: '14px', 
-              fontWeight: 500, 
-              cursor: 'pointer' 
-            }}>
+            <button 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                padding: '12px 20px', 
+                background: 'rgba(255,255,255,0.05)', 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                borderRadius: '6px', 
+                color: '#fff', 
+                fontSize: '14px', 
+                fontWeight: 500, 
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
               🧪 View Testing
             </button>
           </Link>
           <Link href="/products" style={{ textDecoration: 'none' }}>
-            <button style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              padding: '12px 20px', 
-              background: 'linear-gradient(135deg, #1db954 0%, #1ed760 100%)', 
-              border: 'none', 
-              borderRadius: '6px', 
-              color: '#000', 
-              fontSize: '14px', 
-              fontWeight: 600, 
-              cursor: 'pointer' 
-            }}>
+            <button 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                padding: '12px 20px', 
+                background: 'linear-gradient(135deg, #1db954 0%, #1ed760 100%)', 
+                border: 'none', 
+                borderRadius: '6px', 
+                color: '#000', 
+                fontSize: '14px', 
+                fontWeight: 600, 
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 8px rgba(29, 185, 84, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 185, 84, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(29, 185, 84, 0.3)';
+              }}
+            >
               ➕ Quick Add
             </button>
           </Link>
@@ -67,7 +93,11 @@ export default function Dashboard() {
             <div className="attention-action">Review Inventory →</div>
           </div>
         </Link>
-        <div className="attention-card warning">
+        <div 
+          className="attention-card warning"
+          onClick={() => router.push('/offers')}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="attention-header">
             <div className="attention-icon warning">💰</div>
             <span className="attention-badge warning">WARNING</span>

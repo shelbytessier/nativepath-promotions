@@ -135,6 +135,15 @@ export default function ProductsPage() {
     return matchesSearch && matchesType && matchesStatus && matchesGift;
   });
 
+  const hasActiveFilters = searchTerm !== '' || typeFilter !== 'all' || statusFilter !== 'all' || showGiftsOnly;
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setTypeFilter('all');
+    setStatusFilter('all');
+    setShowGiftsOnly(false);
+  };
+
   const handleProductClick = (product: Product) => {
     // Convert product to modal format
     const modalProduct = {
@@ -294,6 +303,35 @@ export default function ProductsPage() {
           </select>
         </div>
 
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            style={{
+              padding: '10px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              color: '#888',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '6px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '12px',
+              alignSelf: 'flex-end',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.color = '#888';
+            }}
+          >
+            ✕ Clear Filters
+          </button>
+        )}
+
         {/* Add Product Button */}
         <button
           onClick={() => setIsCreateModalOpen(true)}
@@ -307,6 +345,16 @@ export default function ProductsPage() {
             cursor: 'pointer',
             fontSize: '13px',
             alignSelf: 'flex-end',
+            transition: 'all 0.2s',
+            boxShadow: '0 2px 8px rgba(29, 185, 84, 0.3)'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 185, 84, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(29, 185, 84, 0.3)';
           }}
         >
           + Add Product
@@ -315,8 +363,13 @@ export default function ProductsPage() {
 
       {/* Results Info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', color: '#888', fontSize: '12px' }}>
-        <span>Showing <strong style={{ color: '#fff' }}>{filteredProducts.length}</strong> products</span>
-                </div>
+        <span>Showing <strong style={{ color: '#fff' }}>{filteredProducts.length}</strong> of {mockProducts.length} products</span>
+        {hasActiveFilters && (
+          <span style={{ color: '#1db954', fontSize: '11px' }}>
+            • Filters active
+          </span>
+        )}
+      </div>
 
       {/* Products Grid */}
       <div className="products-card-grid">
