@@ -30,6 +30,7 @@ interface PageQA {
   pageName: string;
   product: string;
   campaign: string;
+  channel: string;
   lastChecked: string;
   status: 'passed' | 'issues' | 'critical';
   checksRun: number;
@@ -45,6 +46,7 @@ const mockPageQAs: PageQA[] = [
     pageName: "Valentine's Day Collagen LP",
     product: 'Collagen 25s',
     campaign: 'VDAY-26',
+    channel: 'Web',
     lastChecked: '2 hours ago',
     status: 'issues',
     checksRun: 12,
@@ -93,6 +95,7 @@ const mockPageQAs: PageQA[] = [
     pageName: 'Evergreen Collagen LP',
     product: 'Collagen 25s',
     campaign: 'Evergreen',
+    channel: 'Web',
     lastChecked: '5 minutes ago',
     status: 'passed',
     checksRun: 12,
@@ -106,6 +109,7 @@ const mockPageQAs: PageQA[] = [
     pageName: 'Spring Hydrate LP',
     product: 'Hydrate',
     campaign: 'SPRNG-26',
+    channel: 'Email',
     lastChecked: '1 day ago',
     status: 'critical',
     checksRun: 12,
@@ -193,6 +197,7 @@ export default function PageQAPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [productFilter, setProductFilter] = useState('all');
   const [campaignFilter, setCampaignFilter] = useState('all');
+  const [channelFilter, setChannelFilter] = useState('all');
   
   // Comment form state
   const [commentText, setCommentText] = useState('');
@@ -208,8 +213,9 @@ export default function PageQAPage() {
     const matchesStatus = statusFilter === 'all' || page.status === statusFilter;
     const matchesProduct = productFilter === 'all' || page.product === productFilter;
     const matchesCampaign = campaignFilter === 'all' || page.campaign === campaignFilter;
+    const matchesChannel = channelFilter === 'all' || page.channel === channelFilter;
 
-    return matchesSearch && matchesStatus && matchesProduct && matchesCampaign;
+    return matchesSearch && matchesStatus && matchesProduct && matchesCampaign && matchesChannel;
   });
 
   const handleRunQA = (pageId: string) => {
@@ -436,6 +442,21 @@ export default function PageQAPage() {
           ]}
         />
 
+        {/* Channel Filter */}
+        <SearchableSelect
+          label="CHANNEL"
+          value={channelFilter}
+          onChange={setChannelFilter}
+          options={[
+            { value: 'all', label: 'All Channels' },
+            { value: 'Web', label: 'Web' },
+            { value: 'Email', label: 'Email' },
+            { value: 'Facebook', label: 'Facebook' },
+            { value: 'Instagram', label: 'Instagram' },
+            { value: 'Twitter', label: 'Twitter' }
+          ]}
+        />
+
         <button
           onClick={() => alert('Running QA on all pages...')}
           style={{
@@ -521,18 +542,19 @@ export default function PageQAPage() {
       </div>
 
       {/* Pages Table */}
-      <div style={{ background: '#1a1a1a', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ background: '#1a1a1a', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1200px' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>STATUS</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>PAGE</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>PRODUCT</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>CAMPAIGN</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>CHECKS</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>ISSUES</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>LAST CHECKED</th>
-              <th style={{ padding: '16px', textAlign: 'left', fontSize: '11px', color: '#888', fontWeight: '600' }}>ACTIONS</th>
+            <tr style={{ background: '#282828' }}>
+              <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>STATUS</th>
+              <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>PAGE NAME</th>
+              <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>PRODUCT</th>
+              <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>CAMPAIGN</th>
+              <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>CHANNEL</th>
+              <th style={{ padding: '14px 12px', textAlign: 'center', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>CHECKS</th>
+              <th style={{ padding: '14px 12px', textAlign: 'center', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>ISSUES</th>
+              <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>LAST CHECKED</th>
+              <th style={{ padding: '14px 16px', textAlign: 'right', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -551,7 +573,7 @@ export default function PageQAPage() {
                   setIsDetailOpen(true);
                 }}
               >
-                <td style={{ padding: '16px' }}>
+                <td style={{ padding: '14px 16px' }}>
                   <span style={{
                     padding: '4px 10px',
                     borderRadius: '12px',
@@ -563,23 +585,36 @@ export default function PageQAPage() {
                     {page.status === 'passed' ? '✅ Passed' : page.status === 'critical' ? '🚨 Critical' : '⚠️ Issues'}
                   </span>
                 </td>
-                <td style={{ padding: '16px' }}>
-                  <div style={{ fontWeight: '600', marginBottom: '4px' }}>{page.pageName}</div>
-                  <div style={{ fontSize: '12px', color: '#888' }}>{page.pageUrl}</div>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>{page.pageName}</div>
+                  <div style={{ fontSize: '12px', color: '#666' }}>{page.pageUrl}</div>
                 </td>
-                <td style={{ padding: '16px', color: '#b3b3b3' }}>{page.product}</td>
-                <td style={{ padding: '16px', color: '#b3b3b3' }}>{page.campaign}</td>
-                <td style={{ padding: '16px', color: '#b3b3b3' }}>{page.checksRun}</td>
-                <td style={{ padding: '16px' }}>
+                <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px' }}>{page.product}</td>
+                <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px' }}>{page.campaign}</td>
+                <td style={{ padding: '14px 12px' }}>
+                  <span style={{
+                    padding: '4px 10px',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    background: 'rgba(59,130,246,0.15)',
+                    color: '#3b82f6',
+                  }}>
+                    {page.channel}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px', textAlign: 'center' }}>{page.checksRun}</td>
+                <td style={{ padding: '14px 12px', textAlign: 'center' }}>
                   <span style={{ 
                     color: page.issuesFound === 0 ? '#1db954' : page.status === 'critical' ? '#ef4444' : '#f59e0b',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    fontSize: '14px'
                   }}>
                     {page.issuesFound}
                   </span>
                 </td>
-                <td style={{ padding: '16px', color: '#888', fontSize: '13px' }}>{page.lastChecked}</td>
-                <td style={{ padding: '16px' }}>
+                <td style={{ padding: '14px 12px', color: '#666', fontSize: '12px' }}>{page.lastChecked}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -667,7 +702,7 @@ export default function PageQAPage() {
               <div style={{ fontSize: '14px', color: '#888', marginBottom: '16px' }}>
                 {selectedPage.pageUrl}
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{
                   padding: '4px 10px',
                   borderRadius: '12px',
@@ -677,6 +712,16 @@ export default function PageQAPage() {
                   color: selectedPage.status === 'passed' ? '#1db954' : selectedPage.status === 'critical' ? '#ef4444' : '#f59e0b',
                 }}>
                   {selectedPage.status === 'passed' ? '✅ Passed' : selectedPage.status === 'critical' ? '🚨 Critical' : '⚠️ Issues'}
+                </span>
+                <span style={{
+                  padding: '4px 10px',
+                  borderRadius: '12px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  background: 'rgba(59,130,246,0.15)',
+                  color: '#3b82f6',
+                }}>
+                  {selectedPage.channel}
                 </span>
                 <span style={{ fontSize: '13px', color: '#888' }}>
                   {selectedPage.checksRun} checks • {selectedPage.issuesFound} issues • Last checked {selectedPage.lastChecked}
