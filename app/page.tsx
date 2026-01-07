@@ -1,65 +1,185 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Link from 'next/link';
+
+export default function Dashboard() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div style={{ padding: '32px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+        <div>
+          <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '8px', letterSpacing: '-1px' }}>
+            Dashboard
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p style={{ color: '#b3b3b3', fontSize: '14px', fontWeight: 500 }}>
+            3 items need attention • 2 campaigns live
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Link href="/testing" style={{ textDecoration: 'none' }}>
+            <button style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              padding: '12px 20px', 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid rgba(255,255,255,0.1)', 
+              borderRadius: '6px', 
+              color: '#fff', 
+              fontSize: '14px', 
+              fontWeight: 500, 
+              cursor: 'pointer' 
+            }}>
+              🧪 View Testing
+            </button>
+          </Link>
+          <Link href="/products" style={{ textDecoration: 'none' }}>
+            <button style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              padding: '12px 20px', 
+              background: 'linear-gradient(135deg, #1db954 0%, #1ed760 100%)', 
+              border: 'none', 
+              borderRadius: '6px', 
+              color: '#000', 
+              fontSize: '14px', 
+              fontWeight: 600, 
+              cursor: 'pointer' 
+            }}>
+              ➕ Quick Add
+            </button>
+          </Link>
         </div>
-      </main>
+      </div>
+
+      {/* Needs Attention Section */}
+      <div className="dashboard-section-title">⚠️ Needs Attention</div>
+      <div className="attention-grid">
+        <Link href="/products" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div className="attention-card critical">
+            <div className="attention-header">
+              <div className="attention-icon critical">📦</div>
+              <span className="attention-badge critical">CRITICAL</span>
+            </div>
+            <div className="attention-title">Low Stock Alert</div>
+            <div className="attention-desc">Probiotics 30B — Only 142 units remaining</div>
+            <div className="attention-action">Review Inventory →</div>
+          </div>
+        </Link>
+        <div className="attention-card warning">
+          <div className="attention-header">
+            <div className="attention-icon warning">💰</div>
+            <span className="attention-badge warning">WARNING</span>
+          </div>
+          <div className="attention-title">Margin Below Target</div>
+          <div className="attention-desc">Sleep Support bundle at 47% on Facebook channel</div>
+          <div className="attention-action">Adjust Pricing →</div>
+        </div>
+        <Link href="/calendar" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div className="attention-card info">
+            <div className="attention-header">
+              <div className="attention-icon info">📄</div>
+              <span className="attention-badge info">REVIEW</span>
+            </div>
+            <div className="attention-title">Pages Pending Approval</div>
+            <div className="attention-desc">3 landing pages waiting for review</div>
+            <div className="attention-action">Review Pages →</div>
+          </div>
+        </Link>
+      </div>
+
+      {/* Bottom Layout: Quick Actions + Active Campaigns */}
+      <div className="dashboard-bottom-layout">
+        {/* Quick Actions */}
+        <div className="quick-launch-section">
+          <div className="dashboard-section-title">⚡ Quick Actions</div>
+          <div className="quick-launch-grid">
+            <Link href="/products" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="quick-launch-btn">
+                <div className="quick-launch-icon">📦</div>
+                <span className="quick-launch-text">Add Product</span>
+              </div>
+            </Link>
+            <Link href="/offers" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="quick-launch-btn">
+                <div className="quick-launch-icon">🏷️</div>
+                <span className="quick-launch-text">Create Offer</span>
+              </div>
+            </Link>
+            <Link href="/promotions" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="quick-launch-btn">
+                <div className="quick-launch-icon">📅</div>
+                <span className="quick-launch-text">New Campaign</span>
+              </div>
+            </Link>
+            <Link href="/margin-calc" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="quick-launch-btn">
+                <div className="quick-launch-icon">🧮</div>
+                <span className="quick-launch-text">Calculator</span>
+              </div>
+            </Link>
+            <Link href="/testing" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="quick-launch-btn">
+                <div className="quick-launch-icon">🧪</div>
+                <span className="quick-launch-text">Testing</span>
+              </div>
+            </Link>
+            <Link href="/calendar" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="quick-launch-btn">
+                <div className="quick-launch-icon">📄</div>
+                <span className="quick-launch-text">Page Manager</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Active Campaigns */}
+        <div className="campaigns-section">
+          <div className="campaigns-header">
+            <span style={{ fontSize: '18px' }}>📅</span>
+            <span className="campaigns-title">Active Campaigns</span>
+          </div>
+          <div className="campaign-list-new">
+            <Link href="/offers" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="campaign-item-new">
+                <div className="campaign-info-new">
+                  <span className="campaign-emoji">🎄</span>
+                  <div className="campaign-details-new">
+                    <span className="campaign-name-new">New Year Sale</span>
+                    <span className="campaign-date-new">Ends Jan 15</span>
+                  </div>
+                </div>
+                <span className="campaign-status-new live">Live</span>
+              </div>
+            </Link>
+            <Link href="/offers" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="campaign-item-new">
+                <div className="campaign-info-new">
+                  <span className="campaign-emoji">💝</span>
+                  <div className="campaign-details-new">
+                    <span className="campaign-name-new">BOGO Collagen</span>
+                    <span className="campaign-date-new">Ends Jan 20</span>
+                  </div>
+                </div>
+                <span className="campaign-status-new live">Live</span>
+              </div>
+            </Link>
+            <Link href="/offers" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="campaign-item-new">
+                <div className="campaign-info-new">
+                  <span className="campaign-emoji">🚀</span>
+                  <div className="campaign-details-new">
+                    <span className="campaign-name-new">New Product Launch</span>
+                    <span className="campaign-date-new">Starts Feb 1</span>
+                  </div>
+                </div>
+                <span className="campaign-status-new scheduled">Scheduled</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
