@@ -308,7 +308,20 @@ export default function OffersLibraryPage() {
           >
             {/* Image/Icon Header */}
             <div className="offer-card-image">
-              <span className="emoji-placeholder">{offer.emoji}</span>
+              {offer.productCode === 'COL-25' ? (
+                <img 
+                  src="/images/products/collagen-lifestyle-1.jpeg" 
+                  alt={offer.productName}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                  }}
+                />
+              ) : (
+                <span className="emoji-placeholder">{offer.emoji}</span>
+              )}
               <span className={`offer-card-status ${offer.status}`}>
                 {offer.status === 'active' ? 'Active' : offer.status === 'pending' ? 'Pending' : 'Expired'}
               </span>
