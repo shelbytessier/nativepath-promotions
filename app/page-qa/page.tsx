@@ -42,8 +42,8 @@ interface PageQA {
 const mockPageQAs: PageQA[] = [
   {
     id: 'qa-1',
-    pageUrl: 'nativepath.com/collagen-vday',
-    pageName: "Valentine's Day Collagen LP",
+    pageUrl: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
+    pageName: "7 Reasons Collagen LP (Facebook)",
     product: 'Collagen 25s',
     campaign: 'VDAY-26',
     channel: 'Web',
@@ -218,69 +218,145 @@ export default function PageQAPage() {
     return matchesSearch && matchesStatus && matchesProduct && matchesCampaign && matchesChannel;
   });
 
-  const handleRunQA = (pageId: string) => {
+  const handleRunQA = async (pageId: string) => {
     const page = pageQAs.find(p => p.id === pageId);
     if (!page) return;
 
-    // Simulate running QA checks
-    const mockContent = `
-      Welcome to our Collagen Peptides page!
-      Buy now for $29.99 (was $49.99)
-      Limited time offer - hurry!
-      These statements have not been evaluated by the FDA.
-      Customer testimonial: "Great product!" - Results may vary
-      Shop now and get free shipping
-      Terms & Conditions | Privacy Policy
-    `;
+    try {
+      // Show loading state
+      const loadingAlert = alert('🔄 Fetching and analyzing page...');
 
-    // Get channel from page (default to Web)
-    const channel = 'Web';
-    
-    // Run actual QA checks
-    const checkResults = runQAChecks(mockContent, channel);
-    
-    // Convert results to QACheck format
-    const newChecks: QACheck[] = checkResults.map((result, idx) => {
-      const rule = defaultQARules.find(r => r.id === result.ruleId);
-      return {
-        id: `check-${Date.now()}-${idx}`,
-        category: rule?.category || 'spelling',
-        severity: rule?.severity || 'warning',
-        message: result.message || 'Check completed',
-        location: result.location || 'Unknown',
-        autoDetected: true,
-      };
-    });
+      // Fetch the actual page content
+      const response = await fetch('/api/scrape-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: `https://${page.pageUrl}` })
+      });
 
-    // Update page with new checks
-    const updatedPages = pageQAs.map(p => {
-      if (p.id === pageId) {
-        const criticalIssues = newChecks.filter(c => c.severity === 'critical').length;
-        const hasIssues = newChecks.length > 0;
-        
-        return {
-          ...p,
-          checks: newChecks,
-          checksRun: defaultQARules.filter(r => r.enabled).length,
-          issuesFound: newChecks.length,
-          status: (criticalIssues > 0 ? 'critical' : hasIssues ? 'issues' : 'passed') as 'passed' | 'issues' | 'critical',
-          lastChecked: 'Just now',
-        };
+      const result = await response.json();
+
+      if (!result.success) {
+        alert(`❌ Error: ${result.error}`);
+        return;
       }
-      return p;
-    });
 
-    setPageQAs(updatedPages);
-    
-    // Update selected page if it's open
-    if (selectedPage?.id === pageId) {
+      const { data } = result;
+      
+      // Run actual QA checks on the scraped content
+      const checkResults = runQAChecks(data.textContent, page.channel);
+      
+      // Add additional checks based on scraped data
+      const additionalChecks: any[] = [];
+
+      // Check meta description length
+      if (data.metaDescription) {
+        const length = data.metaDescription.length;
+        if (length > 160) {
+          additionalChecks.push({
+            ruleId: 'seo-meta-description',
+            passed: false,
+            message: `Meta description too long: ${length} characters (recommended: 150-160)`,
+            location: 'Page head'
+          });
+        }
+      } else {
+        additionalChecks.push({
+          ruleId: 'seo-meta-description',
+          passed: false,
+          message: 'Meta description missing',
+          location: 'Page head'
+        });
+      }
+
+      // Check H1 tags
+      if (data.h1Tags.length === 0) {
+        additionalChecks.push({
+          ruleId: 'seo-h1-tag',
+          passed: false,
+          message: 'No H1 tag found on page',
+          location: 'Page structure'
+        });
+      } else if (data.h1Tags.length > 1) {
+        additionalChecks.push({
+          ruleId: 'seo-h1-tag',
+          passed: false,
+          message: `Multiple H1 tags found (${data.h1Tags.length}). Should only have one.`,
+          location: 'Page structure'
+        });
+      }
+
+      // Check images for alt text
+      const imagesWithoutAlt = data.images.filter((img: any) => !img.hasAlt);
+      if (imagesWithoutAlt.length > 0) {
+        additionalChecks.push({
+          ruleId: 'img-alt-text',
+          passed: false,
+          message: `${imagesWithoutAlt.length} image(s) missing alt text`,
+          location: 'Images'
+        });
+      }
+
+      // Check for broken links (http instead of https)
+      const httpLinks = data.links.filter((link: string) => link.startsWith('http://'));
+      if (httpLinks.length > 0) {
+        additionalChecks.push({
+          ruleId: 'link-external-https',
+          passed: false,
+          message: `${httpLinks.length} non-HTTPS link(s) found`,
+          location: 'External links'
+        });
+      }
+
+      // Combine all check results
+      const allCheckResults = [...checkResults, ...additionalChecks];
+      
+      // Convert results to QACheck format
+      const newChecks: QACheck[] = allCheckResults.map((result, idx) => {
+        const rule = defaultQARules.find(r => r.id === result.ruleId);
+        return {
+          id: `check-${Date.now()}-${idx}`,
+          category: rule?.category || 'content',
+          severity: rule?.severity || 'warning',
+          message: result.message || 'Check completed',
+          location: result.location || 'Unknown',
+          autoDetected: true,
+        };
+      });
+
+      // Update page with new checks
+      const updatedPages = pageQAs.map(p => {
+        if (p.id === pageId) {
+          const criticalIssues = newChecks.filter(c => c.severity === 'critical').length;
+          const hasIssues = newChecks.length > 0;
+          
+          return {
+            ...p,
+            checks: newChecks,
+            checksRun: defaultQARules.filter(r => r.enabled).length,
+            issuesFound: newChecks.length,
+            status: (criticalIssues > 0 ? 'critical' : hasIssues ? 'issues' : 'passed') as 'passed' | 'issues' | 'critical',
+            lastChecked: 'Just now',
+          };
+        }
+        return p;
+      });
+
+      setPageQAs(updatedPages);
+      
+      // Update selected page if it's open
       const updatedPage = updatedPages.find(p => p.id === pageId);
       if (updatedPage) {
         setSelectedPage(updatedPage);
+        setIsDetailOpen(true); // Open the detail modal to show results
       }
-    }
 
-    alert(`✅ QA checks complete!\n\n${defaultQARules.filter(r => r.enabled).length} checks run\n${newChecks.length} issues found`);
+      // Show success message
+      alert(`✅ QA checks complete!\n\n${defaultQARules.filter(r => r.enabled).length} checks run\n${newChecks.length} issues found\n\nOpening detailed results...`);
+
+    } catch (error: any) {
+      console.error('QA check error:', error);
+      alert(`❌ Error running QA checks: ${error.message}`);
+    }
   };
 
   const handleAddComment = (checkId: string) => {
