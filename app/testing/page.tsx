@@ -159,7 +159,7 @@ export default function TestingPage() {
   };
 
   return (
-    <div className="p-8">
+    <div style={{ padding: '48px 56px' }}>
       <div className="content-header">
         <h1 className="header-title">Testing</h1>
       </div>

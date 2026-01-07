@@ -102,7 +102,7 @@ export default function MarginCalcPage() {
   };
 
   return (
-    <div className="p-8">
+    <div style={{ padding: '48px 56px' }}>
       <div className="content-header">
         <h1 className="header-title">Margin Calculator</h1>
       </div>

@@ -8,7 +8,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   return (
-    <div className="p-8">
+    <div style={{ padding: '48px 56px' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div className="content-header" style={{ marginBottom: 0 }}>

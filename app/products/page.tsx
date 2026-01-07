@@ -197,7 +197,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="p-8">
+    <div style={{ padding: '48px 56px' }}>
       {/* Header */}
       <div className="content-header">
         <h1 className="header-title">

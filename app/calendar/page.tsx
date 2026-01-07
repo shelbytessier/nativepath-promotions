@@ -115,7 +115,7 @@ export default function PageManagerPage() {
   const endedCount = pages.filter(p => p.status === 'ended').length;
 
   return (
-    <div className="p-8">
+    <div style={{ padding: '48px 56px' }}>
       <div className="content-header">
         <h1 className="header-title">Page Manager</h1>
       </div>
