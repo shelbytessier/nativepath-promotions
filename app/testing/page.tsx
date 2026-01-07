@@ -17,6 +17,14 @@ export default function TestingPage() {
   const [isTestRequestModalOpen, setIsTestRequestModalOpen] = useState(false);
   const [aiInsightsChannel, setAiInsightsChannel] = useState('all');
   const [aiInsightsProduct, setAiInsightsProduct] = useState('all');
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string, timestamp: Date}>>([
+    {
+      role: 'assistant',
+      content: 'Hi! I\'m your Testing AI Assistant. I can help you analyze test data, find specific tests, suggest new experiments, and identify patterns across your testing history. Try asking me:\n\n• "Have we tested free shipping on TikTok?"\n• "What tests are currently running for Collagen?"\n• "Show me all tests with confidence above 90%"\n• "What\'s our best performing upsell test?"\n• "Suggest a test for improving Meta conversion rates"',
+      timestamp: new Date()
+    }
+  ]);
 
   const tests = [
     {
@@ -158,6 +166,157 @@ export default function TestingPage() {
     setIsModalOpen(true);
   };
 
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput.trim();
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }]);
+    setChatInput('');
+
+    // Generate AI response based on query
+    setTimeout(() => {
+      const response = generateAIResponse(userMessage, tests);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: response, timestamp: new Date() }]);
+    }, 500);
+  };
+
+  const generateAIResponse = (query: string, testsData: any[]): string => {
+    const lowerQuery = query.toLowerCase();
+    
+    // Check for specific test queries
+    if (lowerQuery.includes('free shipping') || lowerQuery.includes('shipping threshold')) {
+      const shippingTests = testsData.filter(t => t.testType === 'Shipping Test');
+      if (shippingTests.length > 0) {
+        const test = shippingTests[0];
+        return `Yes! We've tested free shipping thresholds:\n\n**${test.name}** (${test.id})\n• Product: ${test.product}\n• Channel: ${test.channel}\n• Status: ${test.status}\n• Result: ${test.testVariant.name} ${test.testVariant.isWinning ? 'WON' : 'is being tested'} with ${test.testVariant.convRate.toFixed(2)}% conversion rate (+${test.deltas.convRate.value.toFixed(2)}% vs control)\n• Confidence: ${test.confidence}%\n\n${test.confidence >= 95 ? '✅ Ready to scale!' : '⏳ Still gathering data...'}`;
+      }
+    }
+
+    // Check for channel-specific queries
+    const channels = ['tiktok', 'meta', 'google', 'youtube'];
+    const mentionedChannel = channels.find(ch => lowerQuery.includes(ch));
+    if (mentionedChannel && (lowerQuery.includes('test') || lowerQuery.includes('running') || lowerQuery.includes('active'))) {
+      const channelTests = testsData.filter(t => t.channel.toLowerCase() === mentionedChannel);
+      if (channelTests.length > 0) {
+        const activeTests = channelTests.filter(t => t.status === 'active');
+        const completedTests = channelTests.filter(t => t.status === 'completed');
+        
+        let response = `Here's what we've tested on **${mentionedChannel.charAt(0).toUpperCase() + mentionedChannel.slice(1)}**:\n\n`;
+        
+        if (activeTests.length > 0) {
+          response += `**🟢 Active Tests (${activeTests.length}):**\n`;
+          activeTests.forEach(t => {
+            response += `• ${t.name} - ${t.product} (${t.daysRunning} days running, ${t.confidence}% confidence)\n`;
+          });
+          response += '\n';
+        }
+        
+        if (completedTests.length > 0) {
+          response += `**✅ Completed Tests (${completedTests.length}):**\n`;
+          completedTests.forEach(t => {
+            response += `• ${t.name} - ${t.product} ${t.testVariant.isWinning ? '(Winner: ' + t.testVariant.name + ')' : ''}\n`;
+          });
+        }
+        
+        return response;
+      } else {
+        return `I don't see any tests specifically for ${mentionedChannel.charAt(0).toUpperCase() + mentionedChannel.slice(1)} in our current data. Would you like me to suggest some test ideas for that channel?`;
+      }
+    }
+
+    // Check for product-specific queries
+    const products = ['collagen', 'creatine', 'probiotic', 'hydrate', 'mct'];
+    const mentionedProduct = products.find(p => lowerQuery.includes(p));
+    if (mentionedProduct) {
+      const productTests = testsData.filter(t => t.product.toLowerCase().includes(mentionedProduct));
+      if (productTests.length > 0) {
+        const winners = productTests.filter(t => t.testVariant.isWinning && t.status === 'completed');
+        let response = `Here's what we've learned about **${productTests[0].product}**:\n\n`;
+        
+        response += `**Total Tests:** ${productTests.length}\n`;
+        response += `**Active:** ${productTests.filter(t => t.status === 'active').length}\n`;
+        response += `**Completed:** ${productTests.filter(t => t.status === 'completed').length}\n\n`;
+        
+        if (winners.length > 0) {
+          response += `**🏆 Winning Strategies:**\n`;
+          winners.forEach(t => {
+            response += `• ${t.name} on ${t.channel}: ${t.testVariant.name} increased conversion by +${Math.abs(t.deltas.convRate.value).toFixed(2)}%\n`;
+          });
+        }
+        
+        return response;
+      }
+    }
+
+    // Check for confidence/statistical significance queries
+    if (lowerQuery.includes('confidence') || lowerQuery.includes('significant') || lowerQuery.includes('ready to scale')) {
+      const highConfidence = testsData.filter(t => t.confidence >= 95);
+      if (highConfidence.length > 0) {
+        let response = `**Tests Ready to Scale** (95%+ confidence):\n\n`;
+        highConfidence.forEach(t => {
+          response += `✅ **${t.name}** (${t.id})\n`;
+          response += `   • Winner: ${t.testVariant.name}\n`;
+          response += `   • Lift: +${Math.abs(t.deltas.convRate.value).toFixed(2)}% conversion, +$${Math.abs(t.deltas.epc.value).toFixed(2)} EPC\n`;
+          response += `   • ${t.product} on ${t.channel}\n\n`;
+        });
+        return response;
+      } else {
+        return `Currently, we have ${testsData.filter(t => t.confidence >= 70 && t.confidence < 95).length} tests approaching significance (70-94% confidence). The highest confidence test is at ${Math.max(...testsData.map(t => t.confidence))}%. These tests need more time or traffic to reach 95% confidence.`;
+      }
+    }
+
+    // Check for "best" or "top performing" queries
+    if (lowerQuery.includes('best') || lowerQuery.includes('top') || lowerQuery.includes('highest') || lowerQuery.includes('winning')) {
+      const completedWinners = testsData.filter(t => t.status === 'completed' && t.testVariant.isWinning);
+      if (completedWinners.length > 0) {
+        const sorted = completedWinners.sort((a, b) => Math.abs(b.deltas.convRate.percent) - Math.abs(a.deltas.convRate.percent));
+        const best = sorted[0];
+        
+        return `**🏆 Our Top Performing Test:**\n\n**${best.name}** (${best.id})\n• Product: ${best.product}\n• Channel: ${best.channel}\n• Winner: ${best.testVariant.name}\n• Performance: +${Math.abs(best.deltas.convRate.value).toFixed(2)}% conversion (${best.deltas.convRate.percent >= 0 ? '+' : ''}${best.deltas.convRate.percent}%)\n• Revenue Impact: +$${Math.abs(best.deltas.epc.value).toFixed(2)} EPC\n• Confidence: ${best.confidence}%\n\n💡 This insight could be applied to similar products or channels!`;
+      }
+    }
+
+    // Check for upsell queries
+    if (lowerQuery.includes('upsell') || lowerQuery.includes('bundle')) {
+      const upsellTests = testsData.filter(t => t.testType === 'Upsell');
+      if (upsellTests.length > 0) {
+        const test = upsellTests[0];
+        return `**Upsell Testing Results:**\n\n${test.name} (${test.id})\n• Tested: ${test.testVariant.name} vs ${test.controlVariant.name}\n• Product: ${test.product}\n• Channel: ${test.channel}\n• Winner: ${test.testVariant.name}\n• Results:\n  - Conversion: ${test.testVariant.convRate.toFixed(2)}% (${test.deltas.convRate.percent >= 0 ? '+' : ''}${test.deltas.convRate.percent}%)\n  - EPC: $${test.testVariant.epc.toFixed(2)} (${test.deltas.epc.percent >= 0 ? '+' : ''}${test.deltas.epc.percent}%)\n  - AOV: $${test.testVariant.aov.toFixed(2)} (${test.deltas.aov.percent >= 0 ? '+' : ''}${test.deltas.aov.percent}%)\n• Confidence: ${test.confidence}%\n\n💰 Estimated monthly impact: +$12,400`;
+      }
+    }
+
+    // Check for suggestion/recommendation queries
+    if (lowerQuery.includes('suggest') || lowerQuery.includes('recommend') || lowerQuery.includes('should i test') || lowerQuery.includes('test idea')) {
+      const suggestions = [
+        `Based on our winning tests, here are some test ideas:\n\n1. **Cross-Product Upsell Opportunity**\n   Since 6-pack upsells won for Probiotics (+10.9% CR), test similar bundle sizes for Collagen and Hydrate.\n\n2. **Free Gift Testing**\n   Collagen tests show free gifts outperform discounts. Test this on Creatine and MCT Oil.\n\n3. **Shipping Threshold Optimization**\n   Our TikTok shipping test is promising. Expand to Meta and Google to see if the $50 threshold works across channels.\n\n4. **Landing Page Angle Tests**\n   Test problem-solution angles (energy, joint pain, gut health) across products that haven't been tested yet.`,
+        
+        `💡 **High-Priority Test Recommendations:**\n\n**For Meta:**\n• Test longer landing pages (3000+ words) with detailed testimonials - our data shows +12% CR\n• Try before/after imagery for visual products like Hydrate and MCT Oil\n\n**For TikTok:**\n• Create UGC-style landing pages with authentic customer photos\n• Test the $50 free shipping threshold that's working on other channels\n\n**For Google:**\n• Expand FAQ sections on all landing pages (+19% CR opportunity)\n• Add "Science Behind X" educational content sections`,
+        
+        `🎯 **Strategic Test Ideas by Goal:**\n\n**Increase AOV:**\n• Test 6-pack vs 4-pack upsells across remaining products\n• Try combo bundles (Collagen + Probiotics)\n\n**Improve Conversion:**\n• Test subscription-first messaging (works for Probiotics)\n• Add social proof sections with customer reviews\n\n**Reduce CAC:**\n• Test free gift offers vs discounts\n• Optimize free shipping thresholds by channel`
+      ];
+      
+      return suggestions[Math.floor(Math.random() * suggestions.length)];
+    }
+
+    // Check for status queries
+    if (lowerQuery.includes('active') || lowerQuery.includes('running') || lowerQuery.includes('current')) {
+      const activeTests = testsData.filter(t => t.status === 'active');
+      let response = `**🟢 Currently Active Tests (${activeTests.length}):**\n\n`;
+      activeTests.forEach(t => {
+        response += `**${t.name}** (${t.id})\n`;
+        response += `• ${t.product} on ${t.channel}\n`;
+        response += `• Running for ${t.daysRunning} days\n`;
+        response += `• Current confidence: ${t.confidence}%\n`;
+        response += `• Leading variant: ${t.testVariant.isWinning ? t.testVariant.name : t.controlVariant.name}\n\n`;
+      });
+      return response;
+    }
+
+    // Default helpful response
+    return `I can help you with that! Here are some things you can ask me:\n\n**Find Tests:**\n• "Show me all TikTok tests"\n• "What tests are running for Collagen?"\n• "Tests with high confidence"\n\n**Analyze Performance:**\n• "What's our best performing test?"\n• "Show me winning upsell strategies"\n• "Tests ready to scale"\n\n**Get Recommendations:**\n• "Suggest a test for Meta"\n• "What should I test next for Probiotics?"\n• "Test ideas to improve conversion"\n\nTry rephrasing your question or ask something specific about your testing data!`;
+  };
+
   return (
     <div style={{ padding: '48px 56px' }}>
       <div className="content-header">
@@ -177,7 +336,13 @@ export default function TestingPage() {
             className={`products-tab ${activeTab === 'ai-insights' ? 'active' : ''}`}
             onClick={() => setActiveTab('ai-insights')}
           >
-            🤖 AI Insights
+            💡 AI Insights
+          </button>
+          <button 
+            className={`products-tab ${activeTab === 'ai-chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ai-chat')}
+          >
+            🤖 AI Chat Assistant
           </button>
         </div>
 
@@ -760,6 +925,260 @@ export default function TestingPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* AI Chat Assistant Tab */}
+        {activeTab === 'ai-chat' && (
+          <div className="products-tab-content active">
+            <div style={{ 
+              background: '#181818', 
+              border: '1px solid rgba(255,255,255,0.1)', 
+              borderRadius: '12px', 
+              height: '600px',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}>
+              {/* Chat Header */}
+              <div style={{ 
+                padding: '20px 24px', 
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                background: 'linear-gradient(135deg, rgba(29,185,84,0.1) 0%, rgba(59,130,246,0.1) 100%)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '28px' }}>🤖</div>
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '2px' }}>AI Testing Assistant</h3>
+                    <p style={{ fontSize: '12px', color: '#888' }}>Ask me anything about your test data, patterns, and recommendations</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div style={{ 
+                flex: 1, 
+                overflowY: 'auto', 
+                padding: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px'
+              }}>
+                {chatMessages.map((msg, idx) => (
+                  <div key={idx} style={{ 
+                    display: 'flex', 
+                    gap: '12px',
+                    alignItems: 'flex-start',
+                    flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
+                  }}>
+                    {/* Avatar */}
+                    <div style={{ 
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: msg.role === 'user' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #1db954 0%, #15803d 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '18px',
+                      flexShrink: 0
+                    }}>
+                      {msg.role === 'user' ? '👤' : '🤖'}
+                    </div>
+
+                    {/* Message Bubble */}
+                    <div style={{ 
+                      maxWidth: '75%',
+                      background: msg.role === 'user' ? 'rgba(102,126,234,0.15)' : 'rgba(29,185,84,0.08)',
+                      border: `1px solid ${msg.role === 'user' ? 'rgba(102,126,234,0.3)' : 'rgba(29,185,84,0.2)'}`,
+                      borderRadius: '12px',
+                      padding: '12px 16px'
+                    }}>
+                      <div style={{ 
+                        fontSize: '13px', 
+                        lineHeight: '1.6',
+                        whiteSpace: 'pre-wrap',
+                        color: '#fff'
+                      }}>
+                        {msg.content}
+                      </div>
+                      <div style={{ 
+                        fontSize: '10px', 
+                        color: '#666', 
+                        marginTop: '6px',
+                        textAlign: msg.role === 'user' ? 'right' : 'left'
+                      }}>
+                        {msg.timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chat Input */}
+              <form onSubmit={handleChatSubmit} style={{ 
+                padding: '20px 24px', 
+                borderTop: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(0,0,0,0.2)'
+              }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                  <div style={{ flex: 1 }}>
+                    <textarea
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Ask me anything... e.g., 'Have we tested free shipping on TikTok?' or 'What's our best upsell test?'"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleChatSubmit(e as any);
+                        }
+                      }}
+                      style={{ 
+                        width: '100%',
+                        minHeight: '44px',
+                        maxHeight: '120px',
+                        padding: '12px 16px',
+                        background: '#282828',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '8px',
+                        color: '#fff',
+                        fontSize: '13px',
+                        resize: 'vertical',
+                        fontFamily: 'inherit',
+                        outline: 'none'
+                      }}
+                    />
+                    <div style={{ fontSize: '11px', color: '#666', marginTop: '6px' }}>
+                      Press Enter to send, Shift+Enter for new line
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!chatInput.trim()}
+                    style={{ 
+                      padding: '12px 24px',
+                      background: chatInput.trim() ? '#1db954' : '#333',
+                      color: chatInput.trim() ? '#000' : '#666',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      fontSize: '13px',
+                      cursor: chatInput.trim() ? 'pointer' : 'not-allowed',
+                      transition: 'all 0.2s',
+                      height: '44px'
+                    }}
+                    onMouseOver={(e) => {
+                      if (chatInput.trim()) e.currentTarget.style.background = '#1ed760';
+                    }}
+                    onMouseOut={(e) => {
+                      if (chatInput.trim()) e.currentTarget.style.background = '#1db954';
+                    }}
+                  >
+                    Send 🚀
+                  </button>
+                </div>
+
+                {/* Quick Prompts */}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setChatInput('Show me all active tests')}
+                    style={{ 
+                      padding: '6px 12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#999',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.color = '#999';
+                    }}
+                  >
+                    Active tests
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChatInput('What\'s our best performing test?')}
+                    style={{ 
+                      padding: '6px 12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#999',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.color = '#999';
+                    }}
+                  >
+                    Best test
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChatInput('Suggest test ideas for improving Meta conversion')}
+                    style={{ 
+                      padding: '6px 12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#999',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.color = '#999';
+                    }}
+                  >
+                    Test ideas
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChatInput('Show me tests with 95%+ confidence')}
+                    style={{ 
+                      padding: '6px 12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#999',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.color = '#999';
+                    }}
+                  >
+                    Ready to scale
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
