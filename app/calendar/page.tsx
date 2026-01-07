@@ -650,7 +650,7 @@ export default function PageManagerPage() {
                               cursor: 'pointer',
                             }}
                           >
-                            📝 Review
+                            ✅ QA
                           </button>
                         </Link>
                       )}

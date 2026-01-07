@@ -30,6 +30,14 @@ const teamMembers = [
 ];
 
 const mockPages: any = {
+  'qa-1': {
+    id: 'qa-1',
+    pageUrl: 'https://health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
+    pageName: '7 Reasons Collagen LP (Facebook)',
+    product: 'Collagen 25s',
+    campaign: 'VDAY-26',
+    channel: 'Meta',
+  },
   '1': {
     id: '1',
     pageUrl: 'instapage.com/vday-meta-joint',
