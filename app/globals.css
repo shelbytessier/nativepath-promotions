@@ -1937,6 +1937,54 @@ body {
   color: #888;
 }
 
+/* History Items */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.history-date {
+  color: #888;
+  min-width: 80px;
+}
+
+.history-event {
+  flex: 1;
+}
+
+.history-badge {
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #888;
+}
+
+.history-badge.current {
+  background: rgba(29, 185, 84, 0.15);
+  color: #1db954;
+}
+
+.history-change {
+  font-size: 12px;
+  color: #888;
+}
+
+.history-change.up {
+  color: #1db954;
+}
+
 /* ========================================= */
 /* TAB NAVIGATION STYLES */
 /* ========================================= */

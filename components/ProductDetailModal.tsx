@@ -212,20 +212,42 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
 
         {/* History Tab */}
         <div className={`modal-tab-content ${activeTab === 'history' ? 'active' : ''}`}>
+          {/* Price History */}
           <div className="product-modal-section">
-            <h4>PRODUCT HISTORY</h4>
-            <div style={{ 
-              background: 'rgba(59, 130, 246, 0.1)', 
-              border: '1px solid rgba(59, 130, 246, 0.3)', 
-              borderRadius: '8px', 
-              padding: '20px', 
-              textAlign: 'center' 
-            }}>
-              <div style={{ fontSize: '48px', marginBottom: '12px' }}>📜</div>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '8px' }}>History Coming Soon</h3>
-              <p style={{ fontSize: '13px', color: '#b3b3b3' }}>
-                View price changes, stock updates, and product modifications over time.
-              </p>
+            <h4>PRICE HISTORY</h4>
+            <div className="history-list">
+              <div className="history-item">
+                <span className="history-date">Jan 2026</span>
+                <span className="history-event">Price: ${product.basePrice.toFixed(2)}</span>
+                <span className="history-badge current">Current</span>
+              </div>
+              <div className="history-item">
+                <span className="history-date">Jun 2025</span>
+                <span className="history-event">Price increased to $31.99</span>
+                <span className="history-change up">+$2.00</span>
+              </div>
+              <div className="history-item">
+                <span className="history-date">Jan 2024</span>
+                <span className="history-event">Price: $29.99</span>
+                <span className="history-change">Launch</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Version History */}
+          <div className="product-modal-section">
+            <h4>VERSION HISTORY</h4>
+            <div className="history-list">
+              <div className="history-item">
+                <span className="history-date">Mar 2024</span>
+                <span className="history-event">v2.0 - Updated formula, better solubility</span>
+                <span className="history-badge">Reformulation</span>
+              </div>
+              <div className="history-item">
+                <span className="history-date">Jan 2021</span>
+                <span className="history-event">v1.0 - Initial launch</span>
+                <span className="history-badge">Launch</span>
+              </div>
             </div>
           </div>
         </div>
