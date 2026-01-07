@@ -77,16 +77,15 @@ export default function OfferDetailModal({ isOpen, onClose, offer }: OfferDetail
 
         {/* Offer Card Preview */}
         <div className="offer-modal-card-preview">
-          <div className="offer-modal-card-image">
+          <div className="offer-modal-card-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {offer.sku === 'COL-25' || offer.product.toLowerCase().includes('collagen') ? (
               <img 
                 src="/images/products/collagen.png" 
                 alt={offer.product}
                 style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  objectFit: 'contain',
-                  padding: '10px'
+                  width: '48px', 
+                  height: '48px', 
+                  objectFit: 'contain'
                 }}
               />
             ) : (
