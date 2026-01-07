@@ -148,13 +148,13 @@ export default function OffersLibraryPage() {
   };
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div className="p-8">
       {/* Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '8px', letterSpacing: '-1px' }}>
+      <div className="content-header">
+        <h1 className="header-title">
           Offers Library
         </h1>
-        <p style={{ color: '#b3b3b3', fontSize: '14px', fontWeight: 500 }}>
+        <p className="header-subtitle">
           All approved offers with pricing breakdowns • Click any offer to see full details
         </p>
       </div>

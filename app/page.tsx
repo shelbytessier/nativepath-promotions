@@ -7,14 +7,14 @@ export default function Dashboard() {
   const router = useRouter();
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div className="p-8">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-        <div>
-          <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '8px', letterSpacing: '-1px' }}>
+        <div className="content-header" style={{ marginBottom: 0 }}>
+          <h1 className="header-title">
             Dashboard
           </h1>
-          <p style={{ color: '#b3b3b3', fontSize: '14px', fontWeight: 500 }}>
+          <p className="header-subtitle">
             3 items need attention • 2 campaigns live
           </p>
         </div>

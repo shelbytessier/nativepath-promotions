@@ -169,14 +169,14 @@ export default function LaunchesPage() {
   };
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div className="p-8">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
-        <div>
-          <h1 style={{ fontSize: '36px', fontWeight: 900, marginBottom: '8px', letterSpacing: '-1px' }}>
+        <div className="content-header" style={{ marginBottom: 0 }}>
+          <h1 className="header-title">
             Launches
           </h1>
-          <p style={{ color: '#b3b3b3', fontSize: '14px', fontWeight: 500 }}>
+          <p className="header-subtitle">
             Product launch calendar & performance tracking
           </p>
         </div>
