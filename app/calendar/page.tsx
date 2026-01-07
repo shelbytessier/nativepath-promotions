@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import PageRequestModal from '@/components/PageRequestModal';
 import PageDetailModal from '@/components/PageDetailModal';
 import OfferDetailModal from '@/components/OfferDetailModal';
@@ -20,6 +21,7 @@ interface LandingPage {
   leadAngle: string[];
   painPoint: string;
   status: 'live' | 'dev' | 'ended';
+  qaStatus?: 'ready-for-qa' | 'in-qa' | 'qa-complete' | 'qa-issues';
 }
 
 export default function PageManagerPage() {
@@ -27,6 +29,7 @@ export default function PageManagerPage() {
   const [campaignFilter, setCampaignFilter] = useState('all');
   const [channelFilter, setChannelFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [qaStatusFilter, setQaStatusFilter] = useState('all');
   const [offerFilter, setOfferFilter] = useState('all');
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isPageDetailModalOpen, setIsPageDetailModalOpen] = useState(false);
@@ -48,7 +51,8 @@ export default function PageManagerPage() {
       lpType: 'Listicle',
       leadAngle: ['Fear', 'Problem/Solution'],
       painPoint: 'Joint Pain',
-      status: 'live'
+      status: 'live',
+      qaStatus: 'qa-complete'
     },
     {
       id: '2',
@@ -63,7 +67,8 @@ export default function PageManagerPage() {
       lpType: 'VSL',
       leadAngle: ['Hidden Truth'],
       painPoint: 'Low Energy',
-      status: 'live'
+      status: 'live',
+      qaStatus: 'qa-complete'
     },
     {
       id: '3',
@@ -78,7 +83,8 @@ export default function PageManagerPage() {
       lpType: 'Advertorial',
       leadAngle: ['Problem/Solution'],
       painPoint: 'Aging Skin',
-      status: 'live'
+      status: 'live',
+      qaStatus: 'qa-complete'
     },
     {
       id: '4',
@@ -93,7 +99,40 @@ export default function PageManagerPage() {
       lpType: 'VSL',
       leadAngle: ['Hidden Cause'],
       painPoint: 'Weight Gain',
-      status: 'dev'
+      status: 'dev',
+      qaStatus: 'ready-for-qa'
+    },
+    {
+      id: '5',
+      name: '7 Reasons Collagen LP (Facebook)',
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
+      product: 'Collagen 25s',
+      campaign: 'VDAY-26',
+      campaignColor: '#ec4899',
+      channel: 'Meta',
+      channelEmoji: '📘',
+      offer: 'VDAY-COL25',
+      lpType: 'Listicle',
+      leadAngle: ['Education', 'Problem/Solution'],
+      painPoint: 'Aging/Joint Pain',
+      status: 'dev',
+      qaStatus: 'in-qa'
+    },
+    {
+      id: '6',
+      name: 'Hydrate Spring LP',
+      url: 'nativepath.com/hydrate-spring',
+      product: 'Hydrate',
+      campaign: 'SPRNG-26',
+      campaignColor: '#f59e0b',
+      channel: 'Email',
+      channelEmoji: '📧',
+      offer: 'SPRNG-HYD',
+      lpType: 'Advertorial',
+      leadAngle: ['Problem/Solution'],
+      painPoint: 'Dehydration',
+      status: 'dev',
+      qaStatus: 'qa-issues'
     }
   ];
 
@@ -105,9 +144,10 @@ export default function PageManagerPage() {
     const matchesCampaign = campaignFilter === 'all' || page.campaign === campaignFilter;
     const matchesChannel = channelFilter === 'all' || page.channel === channelFilter;
     const matchesStatus = statusFilter === 'all' || page.status === statusFilter;
+    const matchesQaStatus = qaStatusFilter === 'all' || page.qaStatus === qaStatusFilter;
     const matchesOffer = offerFilter === 'all' || page.offer === offerFilter;
 
-    return matchesSearch && matchesCampaign && matchesChannel && matchesStatus && matchesOffer;
+    return matchesSearch && matchesCampaign && matchesChannel && matchesStatus && matchesQaStatus && matchesOffer;
   });
 
   const liveCount = pages.filter(p => p.status === 'live').length;
@@ -185,6 +225,18 @@ export default function PageManagerPage() {
               { value: 'SPRNG-PRO', label: 'SPRNG-PRO' }
             ]}
           />
+          <SearchableSelect
+            label="QA STATUS"
+            value={qaStatusFilter}
+            onChange={setQaStatusFilter}
+            options={[
+              { value: 'all', label: 'All QA Status' },
+              { value: 'ready-for-qa', label: '📋 Ready for QA' },
+              { value: 'in-qa', label: '🔍 In QA' },
+              { value: 'qa-issues', label: '⚠️ QA Issues' },
+              { value: 'qa-complete', label: '✅ QA Complete' }
+            ]}
+          />
         </div>
 
         {/* Search & Request Button */}
@@ -243,6 +295,7 @@ export default function PageManagerPage() {
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>LEAD ANGLE</th>
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>PAIN POINT</th>
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>STATUS</th>
+                <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>QA STATUS</th>
                 <th style={{ padding: '14px 12px', textAlign: 'left', fontSize: '11px', color: '#b3b3b3', fontWeight: '700' }}>ACTIONS</th>
               </tr>
             </thead>
@@ -366,10 +419,53 @@ export default function PageManagerPage() {
                       fontSize: '12px' 
                     }}>
                       ● {page.status === 'live' ? 'Live' : page.status === 'dev' ? 'In Dev' : 'Ended'}
-                          </span>
+                    </span>
                   </td>
                   <td style={{ padding: '14px 12px' }}>
-                        <button
+                    {page.qaStatus && (
+                      <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: '600',
+                        background: page.qaStatus === 'qa-complete' ? 'rgba(29,185,84,0.15)' : 
+                                   page.qaStatus === 'qa-issues' ? 'rgba(239,68,68,0.15)' :
+                                   page.qaStatus === 'in-qa' ? 'rgba(59,130,246,0.15)' :
+                                   'rgba(245,158,11,0.15)',
+                        color: page.qaStatus === 'qa-complete' ? '#1db954' : 
+                               page.qaStatus === 'qa-issues' ? '#ef4444' :
+                               page.qaStatus === 'in-qa' ? '#3b82f6' :
+                               '#f59e0b',
+                      }}>
+                        {page.qaStatus === 'qa-complete' ? '✅ Complete' :
+                         page.qaStatus === 'qa-issues' ? '⚠️ Issues' :
+                         page.qaStatus === 'in-qa' ? '🔍 In QA' :
+                         '📋 Ready'}
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ padding: '14px 12px' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {page.qaStatus && page.qaStatus !== 'qa-complete' && (
+                        <Link href={`/page-qa/review/${page.id}`}>
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              padding: '4px 12px',
+                              background: 'rgba(29,185,84,0.15)',
+                              border: '1px solid rgba(29,185,84,0.3)',
+                              borderRadius: '4px',
+                              color: '#1db954',
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            📝 Review
+                          </button>
+                        </Link>
+                      )}
+                      <button
                       style={{ 
                         background: '#282828', 
                         border: 'none', 
@@ -394,7 +490,8 @@ export default function PageManagerPage() {
                       }}
                     >
                       View
-                        </button>
+                    </button>
+                    </div>
                   </td>
                 </tr>
               ))}

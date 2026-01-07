@@ -30,13 +30,53 @@ const teamMembers = [
 ];
 
 const mockPages: any = {
-  'qa-1': {
-    id: 'qa-1',
-    pageUrl: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
-    pageName: "7 Reasons Collagen LP (Facebook)",
+  '1': {
+    id: '1',
+    pageUrl: 'instapage.com/vday-meta-joint',
+    pageName: 'VDay-26 | Meta Cold | Joint Pain Angle',
     product: 'Collagen 25s',
     campaign: 'VDAY-26',
-    channel: 'Web',
+    channel: 'Meta',
+  },
+  '2': {
+    id: '2',
+    pageUrl: 'instapage.com/vday-meta-energy',
+    pageName: 'VDay - Meta Cold - Energy',
+    product: 'Collagen 25s',
+    campaign: 'VDAY-26',
+    channel: 'Meta',
+  },
+  '3': {
+    id: '3',
+    pageUrl: 'instapage.com/evergr-google-skin',
+    pageName: 'Evergreen | Google | Skin Health',
+    product: 'Collagen Peptides',
+    campaign: 'EVRGN',
+    channel: 'Google',
+  },
+  '4': {
+    id: '4',
+    pageUrl: 'instapage.com/spring-yt-weight',
+    pageName: 'Spring - YouTube - Weight Loss',
+    product: 'Probiotic 40B',
+    campaign: 'SPRNG-26',
+    channel: 'YouTube',
+  },
+  '5': {
+    id: '5',
+    pageUrl: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
+    pageName: '7 Reasons Collagen LP (Facebook)',
+    product: 'Collagen 25s',
+    campaign: 'VDAY-26',
+    channel: 'Meta',
+  },
+  '6': {
+    id: '6',
+    pageUrl: 'nativepath.com/hydrate-spring',
+    pageName: 'Hydrate Spring LP',
+    product: 'Hydrate',
+    campaign: 'SPRNG-26',
+    channel: 'Email',
   }
 };
 
@@ -221,7 +261,7 @@ export default function PageReviewPage() {
     return (
       <div style={{ padding: '48px 56px' }}>
         <h1>Page not found</h1>
-        <Link href="/page-qa">← Back to Page QA</Link>
+        <Link href="/calendar">← Back to Page Manager</Link>
       </div>
     );
   }
@@ -239,8 +279,8 @@ export default function PageReviewPage() {
       }}>
         {/* Header */}
         <div style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <Link href="/page-qa" style={{ textDecoration: 'none', color: '#888', fontSize: '13px', marginBottom: '12px', display: 'inline-block' }}>
-            ← Back to Page QA
+          <Link href="/calendar" style={{ textDecoration: 'none', color: '#888', fontSize: '13px', marginBottom: '12px', display: 'inline-block' }}>
+            ← Back to Page Manager
           </Link>
           <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '4px' }}>{page.pageName}</h2>
           <div style={{ fontSize: '12px', color: '#3b82f6' }}>{page.pageUrl}</div>
