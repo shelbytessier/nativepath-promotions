@@ -18,7 +18,7 @@ export default function TestingPage() {
   const [aiInsightsChannel, setAiInsightsChannel] = useState('all');
   const [aiInsightsProduct, setAiInsightsProduct] = useState('all');
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string, timestamp: Date}>>([
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string, timestamp: Date, relatedTests?: any[]}>>([
     {
       role: 'assistant',
       content: 'Hi! I\'m your Testing AI Assistant. I can help you analyze test data, find specific tests, suggest new experiments, and identify patterns across your testing history. Try asking me:\n\n• "Have we tested free shipping on TikTok?"\n• "What tests are currently running for Collagen?"\n• "Show me all tests with confidence above 90%"\n• "What\'s our best performing upsell test?"\n• "Suggest a test for improving Meta conversion rates"',
@@ -176,12 +176,12 @@ export default function TestingPage() {
 
     // Generate AI response based on query
     setTimeout(() => {
-      const response = generateAIResponse(userMessage, tests);
-      setChatMessages(prev => [...prev, { role: 'assistant', content: response, timestamp: new Date() }]);
+      const { response, relatedTests } = generateAIResponse(userMessage, tests);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: response, timestamp: new Date(), relatedTests }]);
     }, 500);
   };
 
-  const generateAIResponse = (query: string, testsData: any[]): string => {
+  const generateAIResponse = (query: string, testsData: any[]): { response: string, relatedTests?: any[] } => {
     const lowerQuery = query.toLowerCase();
     
     // Check for specific test queries
@@ -189,7 +189,10 @@ export default function TestingPage() {
       const shippingTests = testsData.filter(t => t.testType === 'Shipping Test');
       if (shippingTests.length > 0) {
         const test = shippingTests[0];
-        return `Yes! We've tested free shipping thresholds:\n\n**${test.name}** (${test.id})\n• Product: ${test.product}\n• Channel: ${test.channel}\n• Status: ${test.status}\n• Result: ${test.testVariant.name} ${test.testVariant.isWinning ? 'WON' : 'is being tested'} with ${test.testVariant.convRate.toFixed(2)}% conversion rate (+${test.deltas.convRate.value.toFixed(2)}% vs control)\n• Confidence: ${test.confidence}%\n\n${test.confidence >= 95 ? '✅ Ready to scale!' : '⏳ Still gathering data...'}`;
+        return {
+          response: `Yes! We've tested free shipping thresholds:\n\n**${test.name}** (${test.id})\n• Product: ${test.product}\n• Channel: ${test.channel}\n• Status: ${test.status}\n• Result: ${test.testVariant.name} ${test.testVariant.isWinning ? 'WON' : 'is being tested'} with ${test.testVariant.convRate.toFixed(2)}% conversion rate (+${test.deltas.convRate.value.toFixed(2)}% vs control)\n• Confidence: ${test.confidence}%\n\n${test.confidence >= 95 ? '✅ Ready to scale!' : '⏳ Still gathering data...'}`,
+          relatedTests: shippingTests
+        };
       }
     }
 
@@ -219,9 +222,9 @@ export default function TestingPage() {
           });
         }
         
-        return response;
+        return { response, relatedTests: channelTests };
       } else {
-        return `I don't see any tests specifically for ${mentionedChannel.charAt(0).toUpperCase() + mentionedChannel.slice(1)} in our current data. Would you like me to suggest some test ideas for that channel?`;
+        return { response: `I don't see any tests specifically for ${mentionedChannel.charAt(0).toUpperCase() + mentionedChannel.slice(1)} in our current data. Would you like me to suggest some test ideas for that channel?` };
       }
     }
 
@@ -245,7 +248,7 @@ export default function TestingPage() {
           });
         }
         
-        return response;
+        return { response, relatedTests: productTests };
       }
     }
 
@@ -260,9 +263,9 @@ export default function TestingPage() {
           response += `   • Lift: +${Math.abs(t.deltas.convRate.value).toFixed(2)}% conversion, +$${Math.abs(t.deltas.epc.value).toFixed(2)} EPC\n`;
           response += `   • ${t.product} on ${t.channel}\n\n`;
         });
-        return response;
+        return { response, relatedTests: highConfidence };
       } else {
-        return `Currently, we have ${testsData.filter(t => t.confidence >= 70 && t.confidence < 95).length} tests approaching significance (70-94% confidence). The highest confidence test is at ${Math.max(...testsData.map(t => t.confidence))}%. These tests need more time or traffic to reach 95% confidence.`;
+        return { response: `Currently, we have ${testsData.filter(t => t.confidence >= 70 && t.confidence < 95).length} tests approaching significance (70-94% confidence). The highest confidence test is at ${Math.max(...testsData.map(t => t.confidence))}%. These tests need more time or traffic to reach 95% confidence.` };
       }
     }
 
@@ -273,7 +276,10 @@ export default function TestingPage() {
         const sorted = completedWinners.sort((a, b) => Math.abs(b.deltas.convRate.percent) - Math.abs(a.deltas.convRate.percent));
         const best = sorted[0];
         
-        return `**🏆 Our Top Performing Test:**\n\n**${best.name}** (${best.id})\n• Product: ${best.product}\n• Channel: ${best.channel}\n• Winner: ${best.testVariant.name}\n• Performance: +${Math.abs(best.deltas.convRate.value).toFixed(2)}% conversion (${best.deltas.convRate.percent >= 0 ? '+' : ''}${best.deltas.convRate.percent}%)\n• Revenue Impact: +$${Math.abs(best.deltas.epc.value).toFixed(2)} EPC\n• Confidence: ${best.confidence}%\n\n💡 This insight could be applied to similar products or channels!`;
+        return {
+          response: `**🏆 Our Top Performing Test:**\n\n**${best.name}** (${best.id})\n• Product: ${best.product}\n• Channel: ${best.channel}\n• Winner: ${best.testVariant.name}\n• Performance: +${Math.abs(best.deltas.convRate.value).toFixed(2)}% conversion (${best.deltas.convRate.percent >= 0 ? '+' : ''}${best.deltas.convRate.percent}%)\n• Revenue Impact: +$${Math.abs(best.deltas.epc.value).toFixed(2)} EPC\n• Confidence: ${best.confidence}%\n\n💡 This insight could be applied to similar products or channels!`,
+          relatedTests: [best]
+        };
       }
     }
 
@@ -282,7 +288,10 @@ export default function TestingPage() {
       const upsellTests = testsData.filter(t => t.testType === 'Upsell');
       if (upsellTests.length > 0) {
         const test = upsellTests[0];
-        return `**Upsell Testing Results:**\n\n${test.name} (${test.id})\n• Tested: ${test.testVariant.name} vs ${test.controlVariant.name}\n• Product: ${test.product}\n• Channel: ${test.channel}\n• Winner: ${test.testVariant.name}\n• Results:\n  - Conversion: ${test.testVariant.convRate.toFixed(2)}% (${test.deltas.convRate.percent >= 0 ? '+' : ''}${test.deltas.convRate.percent}%)\n  - EPC: $${test.testVariant.epc.toFixed(2)} (${test.deltas.epc.percent >= 0 ? '+' : ''}${test.deltas.epc.percent}%)\n  - AOV: $${test.testVariant.aov.toFixed(2)} (${test.deltas.aov.percent >= 0 ? '+' : ''}${test.deltas.aov.percent}%)\n• Confidence: ${test.confidence}%\n\n💰 Estimated monthly impact: +$12,400`;
+        return {
+          response: `**Upsell Testing Results:**\n\n${test.name} (${test.id})\n• Tested: ${test.testVariant.name} vs ${test.controlVariant.name}\n• Product: ${test.product}\n• Channel: ${test.channel}\n• Winner: ${test.testVariant.name}\n• Results:\n  - Conversion: ${test.testVariant.convRate.toFixed(2)}% (${test.deltas.convRate.percent >= 0 ? '+' : ''}${test.deltas.convRate.percent}%)\n  - EPC: $${test.testVariant.epc.toFixed(2)} (${test.deltas.epc.percent >= 0 ? '+' : ''}${test.deltas.epc.percent}%)\n  - AOV: $${test.testVariant.aov.toFixed(2)} (${test.deltas.aov.percent >= 0 ? '+' : ''}${test.deltas.aov.percent}%)\n• Confidence: ${test.confidence}%\n\n💰 Estimated monthly impact: +$12,400`,
+          relatedTests: upsellTests
+        };
       }
     }
 
@@ -296,7 +305,7 @@ export default function TestingPage() {
         `🎯 **Strategic Test Ideas by Goal:**\n\n**Increase AOV:**\n• Test 6-pack vs 4-pack upsells across remaining products\n• Try combo bundles (Collagen + Probiotics)\n\n**Improve Conversion:**\n• Test subscription-first messaging (works for Probiotics)\n• Add social proof sections with customer reviews\n\n**Reduce CAC:**\n• Test free gift offers vs discounts\n• Optimize free shipping thresholds by channel`
       ];
       
-      return suggestions[Math.floor(Math.random() * suggestions.length)];
+      return { response: suggestions[Math.floor(Math.random() * suggestions.length)] };
     }
 
     // Check for status queries
@@ -310,11 +319,11 @@ export default function TestingPage() {
         response += `• Current confidence: ${t.confidence}%\n`;
         response += `• Leading variant: ${t.testVariant.isWinning ? t.testVariant.name : t.controlVariant.name}\n\n`;
       });
-      return response;
+      return { response, relatedTests: activeTests };
     }
 
     // Default helpful response
-    return `I can help you with that! Here are some things you can ask me:\n\n**Find Tests:**\n• "Show me all TikTok tests"\n• "What tests are running for Collagen?"\n• "Tests with high confidence"\n\n**Analyze Performance:**\n• "What's our best performing test?"\n• "Show me winning upsell strategies"\n• "Tests ready to scale"\n\n**Get Recommendations:**\n• "Suggest a test for Meta"\n• "What should I test next for Probiotics?"\n• "Test ideas to improve conversion"\n\nTry rephrasing your question or ask something specific about your testing data!`;
+    return { response: `I can help you with that! Here are some things you can ask me:\n\n**Find Tests:**\n• "Show me all TikTok tests"\n• "What tests are running for Collagen?"\n• "Tests with high confidence"\n\n**Analyze Performance:**\n• "What's our best performing test?"\n• "Show me winning upsell strategies"\n• "Tests ready to scale"\n\n**Get Recommendations:**\n• "Suggest a test for Meta"\n• "What should I test next for Probiotics?"\n• "Test ideas to improve conversion"\n\nTry rephrasing your question or ask something specific about your testing data!` };
   };
 
   return (
@@ -966,52 +975,165 @@ export default function TestingPage() {
                 gap: '16px'
               }}>
                 {chatMessages.map((msg, idx) => (
-                  <div key={idx} style={{ 
-                    display: 'flex', 
-                    gap: '12px',
-                    alignItems: 'flex-start',
-                    flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
-                  }}>
-                    {/* Avatar */}
+                  <div key={idx}>
                     <div style={{ 
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      background: msg.role === 'user' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #1db954 0%, #15803d 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '18px',
-                      flexShrink: 0
+                      display: 'flex', 
+                      gap: '12px',
+                      alignItems: 'flex-start',
+                      flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
                     }}>
-                      {msg.role === 'user' ? '👤' : '🤖'}
+                      {/* Avatar */}
+                      <div style={{ 
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: msg.role === 'user' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #1db954 0%, #15803d 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '18px',
+                        flexShrink: 0
+                      }}>
+                        {msg.role === 'user' ? '👤' : '🤖'}
+                      </div>
+
+                      {/* Message Bubble */}
+                      <div style={{ 
+                        maxWidth: '75%',
+                        background: msg.role === 'user' ? 'rgba(102,126,234,0.15)' : 'rgba(29,185,84,0.08)',
+                        border: `1px solid ${msg.role === 'user' ? 'rgba(102,126,234,0.3)' : 'rgba(29,185,84,0.2)'}`,
+                        borderRadius: '12px',
+                        padding: '12px 16px'
+                      }}>
+                        <div style={{ 
+                          fontSize: '13px', 
+                          lineHeight: '1.6',
+                          whiteSpace: 'pre-wrap',
+                          color: '#fff'
+                        }}>
+                          {msg.content}
+                        </div>
+                        <div style={{ 
+                          fontSize: '10px', 
+                          color: '#666', 
+                          marginTop: '6px',
+                          textAlign: msg.role === 'user' ? 'right' : 'left'
+                        }}>
+                          {msg.timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Message Bubble */}
-                    <div style={{ 
-                      maxWidth: '75%',
-                      background: msg.role === 'user' ? 'rgba(102,126,234,0.15)' : 'rgba(29,185,84,0.08)',
-                      border: `1px solid ${msg.role === 'user' ? 'rgba(102,126,234,0.3)' : 'rgba(29,185,84,0.2)'}`,
-                      borderRadius: '12px',
-                      padding: '12px 16px'
-                    }}>
+                    {/* Related Test Cards */}
+                    {msg.relatedTests && msg.relatedTests.length > 0 && (
                       <div style={{ 
-                        fontSize: '13px', 
-                        lineHeight: '1.6',
-                        whiteSpace: 'pre-wrap',
-                        color: '#fff'
+                        marginTop: '12px',
+                        marginLeft: msg.role === 'user' ? '0' : '48px',
+                        marginRight: msg.role === 'user' ? '48px' : '0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px'
                       }}>
-                        {msg.content}
+                        <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>
+                          📊 {msg.relatedTests.length} {msg.relatedTests.length === 1 ? 'Test' : 'Tests'} • Click to view details
+                        </div>
+                        {msg.relatedTests.map((test: any) => (
+                          <button
+                            key={test.id}
+                            onClick={() => handleTestClick(test)}
+                            style={{
+                              background: 'rgba(255,255,255,0.05)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              borderRadius: '8px',
+                              padding: '12px 16px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              textAlign: 'left',
+                              width: '100%'
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                              e.currentTarget.style.borderColor = 'rgba(29,185,84,0.5)';
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                  <span style={{ 
+                                    background: test.status === 'active' ? 'rgba(29,185,84,0.2)' : 'rgba(59,130,246,0.2)', 
+                                    color: test.status === 'active' ? '#1db954' : '#3b82f6', 
+                                    padding: '2px 8px', 
+                                    borderRadius: '4px', 
+                                    fontSize: '10px', 
+                                    fontWeight: '600',
+                                    textTransform: 'uppercase'
+                                  }}>
+                                    {test.status}
+                                  </span>
+                                  <span style={{ fontFamily: 'monospace', color: '#888', fontSize: '11px' }}>{test.id}</span>
+                                </div>
+                                <div style={{ fontSize: '14px', fontWeight: '600', color: '#fff', marginBottom: '4px' }}>{test.name}</div>
+                                <div style={{ fontSize: '11px', color: '#888' }}>
+                                  {test.product} • {test.channel} • {test.testType}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '10px', color: '#888' }}>Confidence</div>
+                                <div style={{ 
+                                  fontSize: '18px', 
+                                  fontWeight: '700', 
+                                  color: test.confidence >= 95 ? '#1db954' : test.confidence >= 70 ? '#eab308' : '#ef4444' 
+                                }}>
+                                  {test.confidence}%
+                                </div>
+                              </div>
+                            </div>
+                            <div style={{ 
+                              display: 'flex', 
+                              gap: '12px', 
+                              fontSize: '11px',
+                              paddingTop: '8px',
+                              borderTop: '1px solid rgba(255,255,255,0.05)'
+                            }}>
+                              <div>
+                                <span style={{ color: '#888' }}>Conv: </span>
+                                <span style={{ 
+                                  color: test.deltas.convRate.value >= 0 ? '#1db954' : '#ef4444',
+                                  fontWeight: '600'
+                                }}>
+                                  {test.deltas.convRate.value >= 0 ? '+' : ''}{test.deltas.convRate.value.toFixed(2)}%
+                                </span>
+                              </div>
+                              <div>
+                                <span style={{ color: '#888' }}>EPC: </span>
+                                <span style={{ 
+                                  color: test.deltas.epc.value >= 0 ? '#1db954' : '#ef4444',
+                                  fontWeight: '600'
+                                }}>
+                                  {test.deltas.epc.value >= 0 ? '+' : ''}${Math.abs(test.deltas.epc.value).toFixed(2)}
+                                </span>
+                              </div>
+                              <div>
+                                <span style={{ color: '#888' }}>AOV: </span>
+                                <span style={{ 
+                                  color: test.deltas.aov.value >= 0 ? '#1db954' : '#ef4444',
+                                  fontWeight: '600'
+                                }}>
+                                  {test.deltas.aov.value >= 0 ? '+' : ''}${Math.abs(test.deltas.aov.value).toFixed(2)}
+                                </span>
+                              </div>
+                              <div style={{ marginLeft: 'auto', color: '#1db954', fontSize: '12px' }}>
+                                → View Details
+                              </div>
+                            </div>
+                          </button>
+                        ))}
                       </div>
-                      <div style={{ 
-                        fontSize: '10px', 
-                        color: '#666', 
-                        marginTop: '6px',
-                        textAlign: msg.role === 'user' ? 'right' : 'left'
-                      }}>
-                        {msg.timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
