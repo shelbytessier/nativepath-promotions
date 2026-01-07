@@ -343,23 +343,25 @@ export default function TestingPage() {
                     </div>
                   </div>
 
-                  {/* Winner Summary Banner */}
+                  {/* Winner Summary Banner - Prominent */}
                   {test.testVariant.isWinning && test.status === 'completed' && (
                     <div style={{ 
-                      background: 'linear-gradient(90deg, rgba(29,185,84,0.15) 0%, rgba(29,185,84,0.05) 100%)', 
-                      border: '1px solid rgba(29,185,84,0.3)',
-                      padding: '12px 20px',
+                      background: 'linear-gradient(135deg, rgba(29,185,84,0.25) 0%, rgba(21,128,61,0.15) 100%)',
+                      border: '1px solid rgba(29,185,84,0.4)',
+                      borderRadius: '8px',
+                      padding: '16px 20px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '12px'
+                      gap: '16px',
+                      marginBottom: '16px'
                     }}>
-                      <div style={{ fontSize: '20px' }}>🏆</div>
+                      <div style={{ fontSize: '32px' }}>🏆</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '14px', fontWeight: '700', color: '#1db954', marginBottom: '2px' }}>
+                        <div style={{ fontSize: '16px', fontWeight: '900', color: '#1db954', marginBottom: '4px', letterSpacing: '0.5px' }}>
                           {test.testVariant.name} WON
                         </div>
-                        <div style={{ fontSize: '12px', color: '#b3b3b3' }}>
-                          Outperformed {test.controlVariant.name} by <strong style={{ color: '#1db954' }}>+{test.deltas.convRate.value.toFixed(2)}%</strong> conversion rate with <strong>{test.confidence}%</strong> confidence
+                        <div style={{ fontSize: '13px', color: '#e0e0e0', lineHeight: '1.4' }}>
+                          Outperformed {test.controlVariant.name} by <strong style={{ color: '#1db954', fontSize: '14px' }}>+{test.deltas.convRate.value.toFixed(2)}%</strong> conversion rate with <strong style={{ color: '#fff' }}>{test.confidence}%</strong> confidence
                         </div>
                       </div>
                     </div>
