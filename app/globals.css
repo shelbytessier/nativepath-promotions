@@ -258,7 +258,7 @@ body {
   gap: 16px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 900px) {
   .offers-grid-new {
     grid-template-columns: 1fr;
   }
@@ -1988,7 +1988,7 @@ body {
   gap: 20px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 900px) {
   .offers-grid-new {
     grid-template-columns: 1fr;
   }
