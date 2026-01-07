@@ -218,6 +218,16 @@ export default function PageQAPage() {
     return matchesSearch && matchesStatus && matchesProduct && matchesCampaign && matchesChannel;
   });
 
+  const hasActiveFilters = searchTerm !== '' || statusFilter !== 'all' || productFilter !== 'all' || campaignFilter !== 'all' || channelFilter !== 'all';
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setProductFilter('all');
+    setCampaignFilter('all');
+    setChannelFilter('all');
+  };
+
   const handleRunQA = async (pageId: string) => {
     const page = pageQAs.find(p => p.id === pageId);
     if (!page) return;
@@ -511,6 +521,36 @@ export default function PageQAPage() {
             { value: 'Twitter', label: 'Twitter' }
           ]}
         />
+
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            style={{
+              padding: '10px 16px',
+              background: 'rgba(255,255,255,0.05)',
+              color: '#888',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '6px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '12px',
+              alignSelf: 'flex-end',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+              e.currentTarget.style.color = '#888';
+            }}
+          >
+            ✕ Clear Filters
+          </button>
+        )}
 
         <button
           onClick={() => alert('Running QA on all pages...')}
