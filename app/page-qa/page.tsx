@@ -642,7 +642,7 @@ export default function PageQAPage() {
                 </td>
                 <td style={{ padding: '14px 16px' }}>
                   <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>{page.pageName}</div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>{page.pageUrl}</div>
+                  <div style={{ fontSize: '12px', color: '#3b82f6' }}>{page.pageUrl}</div>
                 </td>
                 <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px' }}>{page.product}</td>
                 <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px' }}>{page.campaign}</td>
@@ -754,7 +754,7 @@ export default function PageQAPage() {
               <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px' }}>
                 {selectedPage.pageName}
               </h2>
-              <div style={{ fontSize: '14px', color: '#888', marginBottom: '16px' }}>
+              <div style={{ fontSize: '14px', color: '#3b82f6', marginBottom: '16px' }}>
                 {selectedPage.pageUrl}
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>

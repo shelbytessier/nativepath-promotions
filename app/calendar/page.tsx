@@ -264,7 +264,7 @@ export default function PageManagerPage() {
                 >
                   <td style={{ padding: '14px 16px' }}>
                     <div style={{ fontWeight: '600' }}>{page.name}</div>
-                    <div style={{ fontSize: '11px', color: '#1db954' }}>{page.url}</div>
+                    <div style={{ fontSize: '11px', color: '#3b82f6' }}>{page.url}</div>
                   </td>
                   <td style={{ padding: '14px 12px' }}>
                     <span style={{ fontSize: '12px' }}>{page.product}</span>

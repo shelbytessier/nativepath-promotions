@@ -395,7 +395,7 @@ export default function EmailQAPage() {
                       {link.status === 'checking' ? '🔄' : link.status === 'passed' ? '✅' : '❌'}
                     </span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '13px', fontWeight: '600', marginBottom: '4px', wordBreak: 'break-all' }}>
+                      <div style={{ fontSize: '13px', fontWeight: '600', marginBottom: '4px', wordBreak: 'break-all', color: '#3b82f6' }}>
                         {link.url}
                       </div>
                       {link.status === 'checking' && (
