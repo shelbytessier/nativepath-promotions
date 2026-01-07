@@ -16,6 +16,12 @@ interface EmailQAResult {
   campaignName: string;
   subject: string;
   preheader: string;
+  emailContent: {
+    offersFound: string[];
+    pricesFound: string[];
+    productsFound: string[];
+    textLength: number;
+  };
   links: LinkCheck[];
   totalLinks: number;
   passedLinks: number;
@@ -66,7 +72,46 @@ export default function EmailQAPage() {
     return [...new Set(links)]; // Remove duplicates
   };
 
-  const checkLink = async (url: string): Promise<LinkCheck> => {
+  const analyzeEmailContent = (html: string) => {
+    // Strip HTML tags to get plain text
+    const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    
+    // Extract offers (e.g., "Save $81", "50% off", "Buy 3 Get 1 Free")
+    const offerPatterns = [
+      /save\s+\$?\d+/gi,
+      /\d+%\s+off/gi,
+      /buy\s+\d+\s+get\s+\d+\s+free/gi,
+      /\$\d+\s+off/gi,
+      /free\s+shipping/gi,
+      /limited\s+time/gi,
+    ];
+    const offersFound: string[] = [];
+    offerPatterns.forEach(pattern => {
+      const matches = text.match(pattern);
+      if (matches) {
+        offersFound.push(...matches);
+      }
+    });
+
+    // Extract prices (e.g., "$81", "$1.99", "81.00")
+    const pricePattern = /\$\d+(?:\.\d{2})?/g;
+    const pricesFound = text.match(pricePattern) || [];
+
+    // Extract product names (common NativePath products)
+    const productKeywords = ['collagen', 'probiotic', 'hydrate', 'protein', 'peptides', 'bone broth'];
+    const productsFound = productKeywords.filter(product => 
+      text.toLowerCase().includes(product)
+    );
+
+    return {
+      offersFound: [...new Set(offersFound)],
+      pricesFound: [...new Set(pricesFound)],
+      productsFound: [...new Set(productsFound)],
+      textLength: text.length,
+    };
+  };
+
+  const checkLink = async (url: string, emailContent: any): Promise<LinkCheck> => {
     try {
       // First check if link is accessible
       const response = await fetch('/api/scrape-page', {
@@ -121,6 +166,39 @@ export default function EmailQAPage() {
         });
       }
 
+      // NEW: Cross-check email content with page content
+      const pageText = result.data.textContent.toLowerCase();
+      
+      // Check if email prices match page prices
+      emailContent.pricesFound.forEach((emailPrice: string) => {
+        if (!pageText.includes(emailPrice.toLowerCase())) {
+          additionalIssues.push({
+            message: `Email mentions ${emailPrice} but price not found on landing page`,
+            severity: 'critical'
+          });
+        }
+      });
+
+      // Check if email offers match page offers
+      emailContent.offersFound.forEach((emailOffer: string) => {
+        if (!pageText.includes(emailOffer.toLowerCase())) {
+          additionalIssues.push({
+            message: `Email mentions "${emailOffer}" but offer not found on landing page`,
+            severity: 'critical'
+          });
+        }
+      });
+
+      // Check if email products match page products
+      emailContent.productsFound.forEach((emailProduct: string) => {
+        if (!pageText.includes(emailProduct.toLowerCase())) {
+          additionalIssues.push({
+            message: `Email mentions ${emailProduct} but product not prominently featured on page`,
+            severity: 'warning'
+          });
+        }
+      });
+
       const allIssues = [...qaResults, ...additionalIssues];
 
       return {
@@ -141,7 +219,7 @@ export default function EmailQAPage() {
 
   const handleRunEmailQA = async () => {
     if (!emailHTML.trim()) {
-      alert('Please paste your email HTML');
+      alert('Please paste your email HTML or text');
       return;
     }
 
@@ -149,11 +227,14 @@ export default function EmailQAPage() {
     setResults(null);
 
     try {
+      // Analyze email content first
+      const emailContentAnalysis = analyzeEmailContent(emailHTML);
+
       // Extract all links from email
       const links = extractLinksFromHTML(emailHTML);
 
       if (links.length === 0) {
-        alert('No links found in email HTML');
+        alert('No links found in email');
         setIsChecking(false);
         return;
       }
@@ -168,6 +249,7 @@ export default function EmailQAPage() {
         campaignName: campaignName || 'Untitled Campaign',
         subject: subject || 'No subject',
         preheader: preheader || 'No preheader',
+        emailContent: emailContentAnalysis,
         links: linkChecks,
         totalLinks: links.length,
         passedLinks: 0,
@@ -181,7 +263,7 @@ export default function EmailQAPage() {
       let failed = 0;
 
       for (let i = 0; i < links.length; i++) {
-        const result = await checkLink(links[i]);
+        const result = await checkLink(links[i], emailContentAnalysis);
         checkedLinks.push(result);
 
         if (result.status === 'passed') {
@@ -195,6 +277,7 @@ export default function EmailQAPage() {
           campaignName: campaignName || 'Untitled Campaign',
           subject: subject || 'No subject',
           preheader: preheader || 'No preheader',
+          emailContent: emailContentAnalysis,
           links: checkedLinks,
           totalLinks: links.length,
           passedLinks: passed,
@@ -250,11 +333,12 @@ export default function EmailQAPage() {
           📧 How Email QA Works
         </div>
         <ul style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', paddingLeft: '20px', margin: 0 }}>
-          <li><strong>Option 1:</strong> Paste link(s) from your test email (one per line)</li>
-          <li><strong>Option 2:</strong> Forward test email to <strong>qa@nativepath.com</strong> - we'll auto-extract links</li>
-          <li>System checks each link: accessibility, QA issues, broken pages</li>
+          <li>Paste your complete email HTML or text content</li>
+          <li>System analyzes email for offers, prices, and products mentioned</li>
+          <li>Extracts all links and checks each landing page</li>
+          <li><strong>Cross-checks:</strong> Verifies offers/prices in email match what's on landing pages</li>
+          <li>Runs full QA checks on each page (compliance, accessibility, content)</li>
           <li>Get instant feedback before sending to customers</li>
-          <li>Catch pricing errors, broken pages, and compliance issues</li>
         </ul>
       </div>
 
@@ -322,14 +406,14 @@ export default function EmailQAPage() {
           </div>
         </div>
 
-        {/* Right Column - Email Links */}
+        {/* Right Column - Email Content */}
         <div style={{ background: '#1a1a1a', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Email Links</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Email Content</h3>
           
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PASTE LINKS FROM EMAIL (ONE PER LINE)</label>
+            <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PASTE EMAIL HTML OR TEXT</label>
             <textarea
-              placeholder={`Paste links from your test email, one per line:\n\nhttps://nativepath.com/collagen-vday\nhttps://nativepath.com/checkout\nhttps://nativepath.com/unsubscribe\n\nOr forward test email to: qa@nativepath.com`}
+              placeholder={`Paste your complete email HTML or text here.\n\nWe'll analyze:\n• Offers mentioned (Save $81, 50% off, etc.)\n• Prices ($81, $1.99, etc.)\n• Products (Collagen, Probiotic, etc.)\n• All links in the email\n\nThen cross-check that offers/prices in email match the landing pages.`}
               value={emailHTML}
               onChange={(e) => setEmailHTML(e.target.value)}
               style={{
@@ -376,7 +460,7 @@ export default function EmailQAPage() {
               cursor: isChecking ? 'not-allowed' : 'pointer',
             }}
           >
-            {isChecking ? '🔄 Checking Links...' : '▶️ Check Links'}
+            {isChecking ? '🔄 Running QA...' : '▶️ Run Email QA'}
           </button>
         </div>
       </div>
@@ -390,6 +474,49 @@ export default function EmailQAPage() {
             </h2>
             <div style={{ fontSize: '13px', color: '#888' }}>
               Subject: {results.subject} • Checked: {results.timestamp}
+            </div>
+          </div>
+
+          {/* Email Content Analysis */}
+          <div style={{ marginBottom: '24px', background: '#0f0f0f', padding: '20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '16px', color: '#3b82f6' }}>📧 Email Content Analysis</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              <div>
+                <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px', fontWeight: '600' }}>OFFERS FOUND</div>
+                {results.emailContent.offersFound.length > 0 ? (
+                  <div style={{ fontSize: '12px', color: '#b3b3b3' }}>
+                    {results.emailContent.offersFound.map((offer, idx) => (
+                      <div key={idx} style={{ marginBottom: '2px' }}>• {offer}</div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '12px', color: '#666' }}>None detected</div>
+                )}
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px', fontWeight: '600' }}>PRICES FOUND</div>
+                {results.emailContent.pricesFound.length > 0 ? (
+                  <div style={{ fontSize: '12px', color: '#b3b3b3' }}>
+                    {results.emailContent.pricesFound.map((price, idx) => (
+                      <div key={idx} style={{ marginBottom: '2px' }}>• {price}</div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '12px', color: '#666' }}>None detected</div>
+                )}
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#888', marginBottom: '6px', fontWeight: '600' }}>PRODUCTS FOUND</div>
+                {results.emailContent.productsFound.length > 0 ? (
+                  <div style={{ fontSize: '12px', color: '#b3b3b3' }}>
+                    {results.emailContent.productsFound.map((product, idx) => (
+                      <div key={idx} style={{ marginBottom: '2px', textTransform: 'capitalize' }}>• {product}</div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '12px', color: '#666' }}>None detected</div>
+                )}
+              </div>
             </div>
           </div>
 
