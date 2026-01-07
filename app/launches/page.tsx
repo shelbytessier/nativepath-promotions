@@ -412,55 +412,22 @@ export default function LaunchesPage() {
               return (
                 <div 
                   key={index}
-                  style={{
-                    minHeight: '70px',
-                    padding: '8px',
-                    background: day.isOtherMonth ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.01)',
-                    border: '1px solid rgba(255,255,255,0.03)',
-                    position: 'relative',
-                    transition: 'all 0.2s',
-                    opacity: day.isOtherMonth ? 0.3 : 1,
-                  }}
-                  onMouseOver={(e) => !day.isOtherMonth && (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
-                  onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.01)')}
+                  className={`campaign-cal-day ${day.isOtherMonth ? 'other-month' : ''} ${day.isToday ? 'today' : ''}`}
                 >
-                  <div style={{ 
-                    fontSize: '12px', 
-                    color: day.isToday ? '#1db954' : '#888', 
-                    fontWeight: '600', 
-                    marginBottom: '4px' 
-                  }}>
+                  <div className="campaign-cal-date">
                     {day.date}
                   </div>
                   {dayLaunches.map((launch, idx) => (
                     <div
                       key={idx}
                       onClick={() => handleLaunchClick(launch)}
+                      className="campaign-bar"
                       style={{
-                        fontSize: '9px',
-                        padding: '2px 4px',
-                        borderRadius: '3px',
-                        marginBottom: '3px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
                         background: launch.status === 'on-track' ? 'linear-gradient(90deg, #1db954, #15803d)' :
                                    launch.status === 'delayed' ? 'linear-gradient(90deg, #eab308, #a16207)' :
                                    'linear-gradient(90deg, #3b82f6, #1d4ed8)',
-                        color: '#fff',
-                        fontWeight: '600',
                       }}
                       title={launch.name}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.opacity = '0.8';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.opacity = '1';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
                     >
                       {launch.emoji} {launch.name}
                     </div>
