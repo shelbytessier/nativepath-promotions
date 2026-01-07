@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { runQAChecks, defaultQARules } from '@/lib/qa-checks';
 
 interface LinkCheck {
@@ -30,7 +31,8 @@ interface EmailQAResult {
 }
 
 export default function EmailQAPage() {
-  const [emailHTML, setEmailHTML] = useState('');
+  const router = useRouter();
+  const [emailURL, setEmailURL] = useState('');
   const [campaignName, setCampaignName] = useState('');
   const [subject, setSubject] = useState('');
   const [preheader, setPreheader] = useState('');
@@ -218,8 +220,31 @@ export default function EmailQAPage() {
   };
 
   const handleRunEmailQA = async () => {
-    if (!emailHTML.trim()) {
-      alert('Please paste your email HTML or text');
+    if (!emailURL.trim()) {
+      alert('Please paste your email URL');
+      return;
+    }
+
+    // Create a unique ID for this email review
+    const emailId = 'email-' + Date.now();
+    
+    // Store email data in localStorage for the review page
+    localStorage.setItem(`email-data-${emailId}`, JSON.stringify({
+      emailUrl: emailURL,
+      emailName: campaignName || 'Email Campaign',
+      campaign: campaignName || 'Campaign',
+      channel: 'Email',
+      subject: subject || 'No subject',
+      preheader: preheader || '',
+    }));
+
+    // Navigate to review page
+    router.push(`/email-qa/review/${emailId}`);
+  };
+
+  const handleRunEmailQAOld = async () => {
+    if (!emailURL.trim()) {
+      alert('Please paste your email URL');
       return;
     }
 
@@ -227,11 +252,26 @@ export default function EmailQAPage() {
     setResults(null);
 
     try {
-      // Analyze email content first
-      const emailContentAnalysis = analyzeEmailContent(emailHTML);
+      // Fetch email content from URL
+      const response = await fetch('/api/scrape-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: emailURL })
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        alert('Failed to fetch email content');
+        setIsChecking(false);
+        return;
+      }
+
+      // Analyze email content
+      const emailContentAnalysis = analyzeEmailContent(result.data.textContent);
 
       // Extract all links from email
-      const links = extractLinksFromHTML(emailHTML);
+      const links = extractLinksFromHTML(result.data.textContent);
 
       if (links.length === 0) {
         alert('No links found in email');
@@ -333,12 +373,12 @@ export default function EmailQAPage() {
           📧 How Email QA Works
         </div>
         <ul style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', paddingLeft: '20px', margin: 0 }}>
-          <li>Paste your complete email HTML or text content</li>
-          <li>System analyzes email for offers, prices, and products mentioned</li>
-          <li>Extracts all links and checks each landing page</li>
-          <li><strong>Cross-checks:</strong> Verifies offers/prices in email match what's on landing pages</li>
-          <li>Runs full QA checks on each page (compliance, accessibility, content)</li>
-          <li>Get instant feedback before sending to customers</li>
+          <li>Paste the URL to your test email (from your ESP or email testing tool)</li>
+          <li>Opens a visual review interface showing the email and linked landing pages side-by-side</li>
+          <li>Automatically runs QA checks on both email content and landing pages</li>
+          <li>Click anywhere to add comments, tag team members, and track issues</li>
+          <li><strong>Cross-checks:</strong> Verifies offers/prices in email match landing pages</li>
+          <li>Get instant visual feedback before sending to customers</li>
         </ul>
       </div>
 
@@ -406,16 +446,17 @@ export default function EmailQAPage() {
           </div>
         </div>
 
-        {/* Right Column - Email Content */}
+        {/* Right Column - Email URL */}
         <div style={{ background: '#1a1a1a', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Email Content</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Email URL</h3>
           
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PASTE EMAIL HTML OR TEXT</label>
-            <textarea
-              placeholder={`Paste your complete email HTML or text here.\n\nWe'll analyze:\n• Offers mentioned (Save $81, 50% off, etc.)\n• Prices ($81, $1.99, etc.)\n• Products (Collagen, Probiotic, etc.)\n• All links in the email\n\nThen cross-check that offers/prices in email match the landing pages.`}
-              value={emailHTML}
-              onChange={(e) => setEmailHTML(e.target.value)}
+            <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PASTE EMAIL URL FROM TEST</label>
+            <input
+              type="text"
+              placeholder="https://your-email-service.com/view/email-id-123"
+              value={emailURL}
+              onChange={(e) => setEmailURL(e.target.value)}
               style={{
                 width: '100%',
                 padding: '12px',
@@ -424,8 +465,6 @@ export default function EmailQAPage() {
                 borderRadius: '6px',
                 color: '#fff',
                 fontSize: '13px',
-                minHeight: '200px',
-                resize: 'vertical',
               }}
             />
           </div>
@@ -447,7 +486,7 @@ export default function EmailQAPage() {
 
           <button
             onClick={handleRunEmailQA}
-            disabled={isChecking || !emailHTML.trim()}
+            disabled={isChecking || !emailURL.trim()}
             style={{
               width: '100%',
               padding: '12px',
@@ -460,7 +499,7 @@ export default function EmailQAPage() {
               cursor: isChecking ? 'not-allowed' : 'pointer',
             }}
           >
-            {isChecking ? '🔄 Running QA...' : '▶️ Run Email QA'}
+            {isChecking ? '🔄 Opening Review...' : '▶️ Start Email QA Review'}
           </button>
         </div>
       </div>
