@@ -359,6 +359,25 @@ export default function OffersLibraryPage() {
                 {/* Single */}
                 <div className="offer-tier-box">
                   <div className="offer-tier-label">Single</div>
+                  {offer.productCode === 'COL-25' && (
+                    <div style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      margin: '8px auto 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(255,255,255,0.03)',
+                      borderRadius: '6px',
+                      padding: '8px'
+                    }}>
+                      <img 
+                        src="/images/products/collagen.png" 
+                        alt="Single"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
                   <div className="offer-tier-price-row">
                     <span className="offer-tier-price">${offer.tiers.single.price}</span>
                   </div>
@@ -374,6 +393,25 @@ export default function OffersLibraryPage() {
                 {/* 3-Pack */}
                 <div className="offer-tier-box">
                   <div className="offer-tier-label">3-Pack</div>
+                  {offer.productCode === 'COL-25' && (
+                    <div style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      margin: '8px auto 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(255,255,255,0.03)',
+                      borderRadius: '6px',
+                      padding: '8px'
+                    }}>
+                      <img 
+                        src="/images/products/collagen-25s-3.png" 
+                        alt="3-Pack"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
                   <div className="offer-tier-price-row">
                     <span className="offer-tier-original">${offer.tiers.threePack.originalPrice}</span>
                     <span className="offer-tier-price">${offer.tiers.threePack.price}</span>
@@ -393,6 +431,25 @@ export default function OffersLibraryPage() {
                 {/* 6-Pack */}
                 <div className="offer-tier-box">
                   <div className="offer-tier-label">6-Pack</div>
+                  {offer.productCode === 'COL-25' && (
+                    <div style={{ 
+                      width: '48px', 
+                      height: '48px', 
+                      margin: '8px auto 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(255,255,255,0.03)',
+                      borderRadius: '6px',
+                      padding: '8px'
+                    }}>
+                      <img 
+                        src="/images/products/collagen-25s-6.png" 
+                        alt="6-Pack"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
                   <div className="offer-tier-price-row">
                     <span className="offer-tier-original">${offer.tiers.sixPack.originalPrice}</span>
                     <span className="offer-tier-price">${offer.tiers.sixPack.price}</span>
