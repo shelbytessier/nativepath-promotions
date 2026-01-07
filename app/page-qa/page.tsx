@@ -427,30 +427,9 @@ export default function PageQAPage() {
     <div style={{ padding: '48px 56px' }}>
       {/* Header */}
       <div className="content-header" style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 className="header-title">
-            Page QA
-          </h1>
-          <Link href="/page-qa/settings">
-            <button
-              style={{
-                padding: '10px 20px',
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '6px',
-                color: '#fff',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              ⚙️ QA Settings ({defaultQARules.filter(r => r.enabled).length} checks enabled)
-            </button>
-          </Link>
-        </div>
+        <h1 className="header-title">
+          Page QA
+        </h1>
       </div>
 
       {/* Filter Bar */}
