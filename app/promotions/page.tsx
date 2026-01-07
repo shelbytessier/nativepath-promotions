@@ -8,6 +8,7 @@ export default function CampaignsPage() {
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
 
   const campaigns = [
     {
@@ -115,13 +116,52 @@ export default function CampaignsPage() {
 
     return (
     <div className="p-8">
-      <div className="content-header">
-        <h1 className="header-title">Campaigns</h1>
-        <p className="header-subtitle">Campaign calendar & timeline</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
+        <div className="content-header" style={{ marginBottom: 0 }}>
+          <h1 className="header-title">Campaigns</h1>
+          <p className="header-subtitle">Campaign calendar & timeline</p>
+        </div>
+        
+        {/* View Mode Toggle */}
+        <div style={{ display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', padding: '4px' }}>
+          <button
+            onClick={() => setViewMode('calendar')}
+            style={{
+              padding: '6px 16px',
+              background: viewMode === 'calendar' ? 'rgba(29,185,84,0.2)' : 'transparent',
+              border: viewMode === 'calendar' ? '1px solid rgba(29,185,84,0.4)' : '1px solid transparent',
+              color: viewMode === 'calendar' ? '#1db954' : '#888',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+              transition: 'all 0.2s',
+            }}
+          >
+            📅 Calendar
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            style={{
+              padding: '6px 16px',
+              background: viewMode === 'list' ? 'rgba(29,185,84,0.2)' : 'transparent',
+              border: viewMode === 'list' ? '1px solid rgba(29,185,84,0.4)' : '1px solid transparent',
+              color: viewMode === 'list' ? '#1db954' : '#888',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+              transition: 'all 0.2s',
+            }}
+          >
+            📋 List
+          </button>
+        </div>
       </div>
 
       <div className="content-body">
-        {/* Campaign Calendar */}
+        {/* Campaign Calendar View */}
+        {viewMode === 'calendar' && (
         <div style={{ 
           background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)', 
           border: '1px solid rgba(255,255,255,0.06)', 
@@ -279,11 +319,14 @@ export default function CampaignsPage() {
             </div>
           </div>
         </div>
+        )}
 
-        {/* Campaigns List */}
-        <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#888', marginBottom: '16px', letterSpacing: '0.5px' }}>CAMPAIGNS</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {campaigns.map(campaign => (
+        {/* Campaigns List View */}
+        {viewMode === 'list' && (
+          <div>
+            <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#888', marginBottom: '16px', letterSpacing: '0.5px' }}>ALL CAMPAIGNS</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {campaigns.map(campaign => (
             <div 
               key={campaign.id} 
               className={`campaign-row ${campaign.status}`}
@@ -326,7 +369,9 @@ export default function CampaignsPage() {
               <div className={`campaign-row-status ${campaign.status}`}>{campaign.statusLabel}</div>
             </div>
           ))}
-        </div>
+            </div>
+          </div>
+        )}
 
         {/* Campaign Detail Modal */}
         <CampaignDetailModal 
