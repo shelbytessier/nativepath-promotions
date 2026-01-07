@@ -44,7 +44,7 @@ export default function PageManagerPage() {
   const pages: LandingPage[] = [
     {
       id: 'qa-1',
-      name: '7 Reasons Collagen LP (Facebook)',
+      name: 'VDAY-26 | 7 Reasons Collagen LP',
       url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
       product: 'Collagen 25s',
       campaign: 'VDAY-26',
@@ -62,8 +62,8 @@ export default function PageManagerPage() {
     },
     {
       id: '2',
-      name: 'VDay - Meta Cold - Energy',
-      url: 'instapage.com/vday-meta-energy',
+      name: 'VDAY-26 | Energy VSL',
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
       product: 'Collagen 25s',
       campaign: 'VDAY-26',
       campaignColor: '#ec4899',
@@ -80,8 +80,8 @@ export default function PageManagerPage() {
     },
     {
       id: '3',
-      name: 'Evergreen | Google | Skin Health',
-      url: 'instapage.com/evergr-google-skin',
+      name: 'EVRGN | Skin Health Advertorial',
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
       product: 'Collagen Peptides',
       campaign: 'EVRGN',
       campaignColor: '#1db954',
@@ -96,8 +96,8 @@ export default function PageManagerPage() {
     },
     {
       id: '4',
-      name: 'Spring - YouTube - Weight Loss',
-      url: 'instapage.com/spring-yt-weight',
+      name: 'SPRNG-26 | Weight Loss VSL',
+      url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
       product: 'Probiotic 40B',
       campaign: 'SPRNG-26',
       campaignColor: '#f59e0b',
@@ -112,7 +112,7 @@ export default function PageManagerPage() {
     },
     {
       id: '5',
-      name: '7 Reasons Collagen LP (Facebook)',
+      name: 'VDAY-26 | Joint Pain Listicle',
       url: 'health.nativepath.com/7-reasons-everyone-should-be-taking-this-protein-1107-fb-v8',
       product: 'Collagen 25s',
       campaign: 'VDAY-26',
@@ -464,16 +464,27 @@ export default function PageManagerPage() {
                     }}>
                       {page.name}
                     </div>
-                    <div style={{ 
-                      fontSize: '11px', 
-                      color: '#3b82f6',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '250px'
-                    }}>
+                    <a 
+                      href={page.url.startsWith('http') ? page.url : `https://${page.url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ 
+                        fontSize: '11px', 
+                        color: '#3b82f6',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '250px',
+                        display: 'block',
+                        textDecoration: 'none',
+                        cursor: 'pointer'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                    >
                       {page.url}
-                    </div>
+                    </a>
                   </td>
                   <td style={{ padding: '14px 12px' }}>
                     <span style={{ 
@@ -650,7 +661,7 @@ export default function PageManagerPage() {
                               cursor: 'pointer',
                             }}
                           >
-                            ✅ QA
+                            📝 QA
                           </button>
                         </Link>
                       )}
