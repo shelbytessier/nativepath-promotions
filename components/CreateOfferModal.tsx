@@ -16,10 +16,20 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
   const [basePrice, setBasePrice] = useState(33.99);
   const [notes, setNotes] = useState('');
   
-  // Pricing state
+  // Pricing state - Single
   const [singleDollarOff, setSingleDollarOff] = useState('');
   const [singlePercentOff, setSinglePercentOff] = useState('');
   const [singleTargetPrice, setSingleTargetPrice] = useState('');
+  
+  // Pricing state - 3-Pack
+  const [threePackDollarOff, setThreePackDollarOff] = useState('');
+  const [threePackPercentOff, setThreePackPercentOff] = useState('');
+  const [threePackTargetPrice, setThreePackTargetPrice] = useState('');
+  
+  // Pricing state - 6-Pack
+  const [sixPackDollarOff, setSixPackDollarOff] = useState('');
+  const [sixPackPercentOff, setSixPackPercentOff] = useState('');
+  const [sixPackTargetPrice, setSixPackTargetPrice] = useState('');
   
   const products = [
     { id: 'collagen', name: 'Collagen 25s', emoji: '🦴', price: 33.99 },
@@ -37,6 +47,7 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
     setBasePrice(product.price);
   };
 
+  // Single Unit Calculations
   const calculateFinalPrice = () => {
     if (singleTargetPrice) return parseFloat(singleTargetPrice);
     if (singleDollarOff) return basePrice - parseFloat(singleDollarOff);
@@ -52,6 +63,40 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
     return { margin, marginPercent };
   };
 
+  // 3-Pack Calculations
+  const threePackBase = basePrice * 3;
+  const calculateThreePackFinalPrice = () => {
+    if (threePackTargetPrice) return parseFloat(threePackTargetPrice);
+    if (threePackDollarOff) return threePackBase - parseFloat(threePackDollarOff);
+    if (threePackPercentOff) return threePackBase * (1 - parseFloat(threePackPercentOff) / 100);
+    return threePackBase;
+  };
+
+  const calculateThreePackMargin = () => {
+    const finalPrice = calculateThreePackFinalPrice();
+    const cogs = 12 * 3;
+    const margin = finalPrice - cogs;
+    const marginPercent = (margin / finalPrice) * 100;
+    return { margin, marginPercent };
+  };
+
+  // 6-Pack Calculations
+  const sixPackBase = basePrice * 6;
+  const calculateSixPackFinalPrice = () => {
+    if (sixPackTargetPrice) return parseFloat(sixPackTargetPrice);
+    if (sixPackDollarOff) return sixPackBase - parseFloat(sixPackDollarOff);
+    if (sixPackPercentOff) return sixPackBase * (1 - parseFloat(sixPackPercentOff) / 100);
+    return sixPackBase;
+  };
+
+  const calculateSixPackMargin = () => {
+    const finalPrice = calculateSixPackFinalPrice();
+    const cogs = 12 * 6;
+    const margin = finalPrice - cogs;
+    const marginPercent = (margin / finalPrice) * 100;
+    return { margin, marginPercent };
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('Offer submitted for approval!');
@@ -60,6 +105,12 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
 
   const finalPrice = calculateFinalPrice();
   const { margin, marginPercent } = calculateMargin();
+  
+  const threePackFinalPrice = calculateThreePackFinalPrice();
+  const { margin: threePackMargin, marginPercent: threePackMarginPercent } = calculateThreePackMargin();
+  
+  const sixPackFinalPrice = calculateSixPackFinalPrice();
+  const { margin: sixPackMargin, marginPercent: sixPackMarginPercent } = calculateSixPackMargin();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -327,34 +378,226 @@ export default function CreateOfferModal({ isOpen, onClose }: CreateOfferModalPr
               </div>
             </div>
 
-            {/* 3-Pack Placeholder */}
+            {/* 3-Pack Calculator */}
             <div style={{
               background: 'rgba(29, 185, 84, 0.05)',
               padding: '16px',
               borderRadius: '6px',
-              border: '1px solid rgba(29, 185, 84, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#666',
-              fontSize: '13px'
+              border: '1px solid rgba(29, 185, 84, 0.3)'
             }}>
-              3-Pack pricing
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>3-Pack</div>
+              
+              <div style={{ marginBottom: '12px', padding: '8px', background: '#282828', borderRadius: '4px' }}>
+                <div style={{ fontSize: '10px', color: '#888' }}>BASE PRICE</div>
+                <div style={{ fontSize: '16px', fontWeight: '700' }}>${threePackBase.toFixed(2)}</div>
+              </div>
+
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', color: '#888' }}>$ OFF</label>
+                <input
+                  type="number"
+                  value={threePackDollarOff}
+                  onChange={(e) => {
+                    setThreePackDollarOff(e.target.value);
+                    setThreePackPercentOff('');
+                    setThreePackTargetPrice('');
+                  }}
+                  placeholder="0.00"
+                  step="0.01"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', color: '#888' }}>% DISCOUNT</label>
+                <input
+                  type="number"
+                  value={threePackPercentOff}
+                  onChange={(e) => {
+                    setThreePackPercentOff(e.target.value);
+                    setThreePackDollarOff('');
+                    setThreePackTargetPrice('');
+                  }}
+                  placeholder="0"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', color: '#888' }}>TARGET PRICE</label>
+                <input
+                  type="number"
+                  value={threePackTargetPrice}
+                  onChange={(e) => {
+                    setThreePackTargetPrice(e.target.value);
+                    setThreePackDollarOff('');
+                    setThreePackPercentOff('');
+                  }}
+                  placeholder="0.00"
+                  step="0.01"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{
+                background: '#1db954',
+                padding: '10px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                marginBottom: '8px'
+              }}>
+                <div style={{ fontSize: '10px', color: 'rgba(0,0,0,0.6)' }}>FINAL PRICE</div>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#000' }}>
+                  ${threePackFinalPrice.toFixed(2)}
+                </div>
+              </div>
+
+              <div style={{
+                background: '#282828',
+                padding: '8px',
+                borderRadius: '6px',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '10px', color: '#888' }}>MARGIN</div>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: '#1db954' }}>
+                  ${threePackMargin.toFixed(2)} ({threePackMarginPercent.toFixed(0)}%)
+                </div>
+              </div>
             </div>
 
-            {/* 6-Pack Placeholder */}
+            {/* 6-Pack Calculator */}
             <div style={{
               background: 'rgba(29, 185, 84, 0.1)',
               padding: '16px',
               borderRadius: '6px',
-              border: '1px solid rgba(29, 185, 84, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#666',
-              fontSize: '13px'
+              border: '1px solid rgba(29, 185, 84, 0.5)'
             }}>
-              6-Pack pricing
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>6-Pack</div>
+              
+              <div style={{ marginBottom: '12px', padding: '8px', background: '#282828', borderRadius: '4px' }}>
+                <div style={{ fontSize: '10px', color: '#888' }}>BASE PRICE</div>
+                <div style={{ fontSize: '16px', fontWeight: '700' }}>${sixPackBase.toFixed(2)}</div>
+              </div>
+
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', color: '#888' }}>$ OFF</label>
+                <input
+                  type="number"
+                  value={sixPackDollarOff}
+                  onChange={(e) => {
+                    setSixPackDollarOff(e.target.value);
+                    setSixPackPercentOff('');
+                    setSixPackTargetPrice('');
+                  }}
+                  placeholder="0.00"
+                  step="0.01"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', color: '#888' }}>% DISCOUNT</label>
+                <input
+                  type="number"
+                  value={sixPackPercentOff}
+                  onChange={(e) => {
+                    setSixPackPercentOff(e.target.value);
+                    setSixPackDollarOff('');
+                    setSixPackTargetPrice('');
+                  }}
+                  placeholder="0"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', color: '#888' }}>TARGET PRICE</label>
+                <input
+                  type="number"
+                  value={sixPackTargetPrice}
+                  onChange={(e) => {
+                    setSixPackTargetPrice(e.target.value);
+                    setSixPackDollarOff('');
+                    setSixPackPercentOff('');
+                  }}
+                  placeholder="0.00"
+                  step="0.01"
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{
+                background: '#1db954',
+                padding: '10px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                marginBottom: '8px'
+              }}>
+                <div style={{ fontSize: '10px', color: 'rgba(0,0,0,0.6)' }}>FINAL PRICE</div>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#000' }}>
+                  ${sixPackFinalPrice.toFixed(2)}
+                </div>
+              </div>
+
+              <div style={{
+                background: '#282828',
+                padding: '8px',
+                borderRadius: '6px',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '10px', color: '#888' }}>MARGIN</div>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: '#1db954' }}>
+                  ${sixPackMargin.toFixed(2)} ({sixPackMarginPercent.toFixed(0)}%)
+                </div>
+              </div>
             </div>
           </div>
 
