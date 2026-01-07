@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import OfferDetailModal from '@/components/OfferDetailModal';
 import CreateOfferModal from '@/components/CreateOfferModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 interface Offer {
   id: string;
@@ -203,77 +204,44 @@ export default function OffersLibraryPage() {
         </div>
 
         {/* Campaign Filter */}
-        <div style={{ minWidth: '160px' }}>
-          <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>CAMPAIGN</label>
-          <select
-            value={campaignFilter}
-            onChange={(e) => setCampaignFilter(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px 12px', 
-              background: '#282828', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              color: '#fff', 
-              borderRadius: '6px', 
-              fontSize: '13px',
-              outline: 'none'
-            }}
-          >
-            <option value="all">All Campaigns</option>
-            <option value="valentines">💝 Valentine's Day</option>
-            <option value="evergreen">🌲 Evergreen</option>
-            <option value="christmas">🎄 Christmas</option>
-          </select>
-        </div>
+        <SearchableSelect
+          label="CAMPAIGN"
+          value={campaignFilter}
+          onChange={setCampaignFilter}
+          options={[
+            { value: 'all', label: 'All Campaigns' },
+            { value: 'valentines', label: '💝 Valentine\'s Day' },
+            { value: 'evergreen', label: '🌲 Evergreen' },
+            { value: 'christmas', label: '🎄 Christmas' }
+          ]}
+        />
 
         {/* Product Filter */}
-        <div style={{ minWidth: '150px' }}>
-          <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>PRODUCT</label>
-          <select
-            value={productFilter}
-            onChange={(e) => setProductFilter(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px 12px', 
-              background: '#282828', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              color: '#fff', 
-              borderRadius: '6px', 
-              fontSize: '13px',
-              outline: 'none'
-            }}
-          >
-            <option value="all">All Products</option>
-            <option value="collagen">Collagen 25s</option>
-            <option value="hydrate">Hydrate</option>
-            <option value="probiotics">Probiotics 30B</option>
-            <option value="mct">MCT Oil Powder</option>
-          </select>
-        </div>
+        <SearchableSelect
+          label="PRODUCT"
+          value={productFilter}
+          onChange={setProductFilter}
+          options={[
+            { value: 'all', label: 'All Products' },
+            { value: 'collagen', label: 'Collagen 25s' },
+            { value: 'hydrate', label: 'Hydrate' },
+            { value: 'probiotics', label: 'Probiotics 30B' },
+            { value: 'mct', label: 'MCT Oil Powder' }
+          ]}
+        />
 
         {/* Status Filter */}
-        <div style={{ minWidth: '130px' }}>
-          <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>STATUS</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px 12px', 
-              background: '#282828', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              color: '#fff', 
-              borderRadius: '6px', 
-              fontSize: '13px',
-              outline: 'none'
-            }}
-          >
-            <option value="all">All Status</option>
-            <option value="active">🟢 Active</option>
-            <option value="pending">🟡 Pending</option>
-            <option value="expired">⚫ Expired</option>
-          </select>
-        </div>
+        <SearchableSelect
+          label="STATUS"
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={[
+            { value: 'all', label: 'All Status' },
+            { value: 'active', label: '🟢 Active' },
+            { value: 'pending', label: '🟡 Pending' },
+            { value: 'expired', label: '⚫ Expired' }
+          ]}
+        />
 
         {hasActiveFilters && (
           <button

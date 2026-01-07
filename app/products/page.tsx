@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import ProductDetailModal from '@/components/ProductDetailModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 interface Product {
   id: string;
@@ -231,74 +232,41 @@ export default function ProductsPage() {
         </div>
 
         {/* Type Filter */}
-        <div style={{ minWidth: '140px' }}>
-          <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>TYPE</label>
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px 12px', 
-              background: '#282828', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              color: '#fff', 
-              borderRadius: '6px', 
-              fontSize: '13px',
-              outline: 'none'
-            }}
-          >
-            <option value="all">All Types</option>
-            <option value="collagen">Collagen</option>
-            <option value="supplements">Supplements</option>
-            <option value="gifts">Gifts</option>
-          </select>
-        </div>
+        <SearchableSelect
+          label="TYPE"
+          value={typeFilter}
+          onChange={setTypeFilter}
+          options={[
+            { value: 'all', label: 'All Types' },
+            { value: 'collagen', label: 'Collagen' },
+            { value: 'supplements', label: 'Supplements' },
+            { value: 'gifts', label: 'Gifts' }
+          ]}
+        />
 
         {/* Status Filter */}
-        <div style={{ minWidth: '140px' }}>
-          <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>STATUS</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '10px 12px', 
-              background: '#282828', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              color: '#fff', 
-              borderRadius: '6px', 
-              fontSize: '13px',
-              outline: 'none'
-            }}
-          >
-            <option value="all">All Status</option>
-            <option value="active">🟢 Active</option>
-            <option value="low-stock">🟡 Low Stock</option>
-            <option value="discontinued">⚫ Discontinued</option>
-          </select>
-      </div>
+        <SearchableSelect
+          label="STATUS"
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={[
+            { value: 'all', label: 'All Status' },
+            { value: 'active', label: '🟢 Active' },
+            { value: 'low-stock', label: '🟡 Low Stock' },
+            { value: 'discontinued', label: '⚫ Discontinued' }
+          ]}
+        />
 
         {/* Special Filter */}
-        <div style={{ minWidth: '150px' }}>
-          <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>SPECIAL</label>
-          <select
-            value={showGiftsOnly ? 'gifts' : 'all'}
-            onChange={(e) => setShowGiftsOnly(e.target.value === 'gifts')}
-            style={{ 
-              width: '100%', 
-              padding: '10px 12px', 
-              background: '#282828', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              color: '#fff', 
-              borderRadius: '6px', 
-              fontSize: '13px',
-              outline: 'none'
-            }}
-          >
-            <option value="all">All Products</option>
-            <option value="gifts">🎁 Free Gift Items</option>
-          </select>
-        </div>
+        <SearchableSelect
+          label="SPECIAL"
+          value={showGiftsOnly ? 'gifts' : 'all'}
+          onChange={(val) => setShowGiftsOnly(val === 'gifts')}
+          options={[
+            { value: 'all', label: 'All Products' },
+            { value: 'gifts', label: '🎁 Free Gift Items' }
+          ]}
+        />
 
         {/* Clear Filters Button */}
         {hasActiveFilters && (

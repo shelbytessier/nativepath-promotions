@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import TestDetailModal from '@/components/TestDetailModal';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function TestingPage() {
   const [activeTab, setActiveTab] = useState('tests');
@@ -208,99 +209,55 @@ export default function TestingPage() {
               </div>
 
               {/* Status Filter */}
-              <div style={{ minWidth: '140px' }}>
-                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>STATUS</label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '10px 12px', 
-                    background: '#282828', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    color: '#fff', 
-                    borderRadius: '6px', 
-                    fontSize: '13px',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="all">All Tests</option>
-                  <option value="active">🟢 Active</option>
-                  <option value="completed">✅ Completed</option>
-                </select>
-              </div>
+              <SearchableSelect
+                label="STATUS"
+                value={statusFilter}
+                onChange={setStatusFilter}
+                options={[
+                  { value: 'all', label: 'All Tests' },
+                  { value: 'active', label: '🟢 Active' },
+                  { value: 'completed', label: '✅ Completed' }
+                ]}
+              />
 
               {/* Product Filter */}
-              <div style={{ minWidth: '150px' }}>
-                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>PRODUCT</label>
-                <select
-                  value={productFilter}
-                  onChange={(e) => setProductFilter(e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '10px 12px', 
-                    background: '#282828', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    color: '#fff', 
-                    borderRadius: '6px', 
-                    fontSize: '13px',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="all">All Products</option>
-                  <option value="Collagen 25s">Collagen 25s</option>
-                  <option value="Creatine">Creatine</option>
-                  <option value="Probiotic 30B">Probiotic 30B</option>
-                </select>
-              </div>
+              <SearchableSelect
+                label="PRODUCT"
+                value={productFilter}
+                onChange={setProductFilter}
+                options={[
+                  { value: 'all', label: 'All Products' },
+                  { value: 'Collagen 25s', label: 'Collagen 25s' },
+                  { value: 'Creatine', label: 'Creatine' },
+                  { value: 'Probiotic 30B', label: 'Probiotic 30B' }
+                ]}
+              />
 
               {/* Channel Filter */}
-              <div style={{ minWidth: '140px' }}>
-                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>CHANNEL</label>
-                <select
-                  value={channelFilter}
-                  onChange={(e) => setChannelFilter(e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '10px 12px', 
-                    background: '#282828', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    color: '#fff', 
-                    borderRadius: '6px', 
-                    fontSize: '13px',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="all">All Channels</option>
-                  <option value="TikTok">TikTok</option>
-                  <option value="Meta">Meta</option>
-                  <option value="Google">Google</option>
-                </select>
-              </div>
+              <SearchableSelect
+                label="CHANNEL"
+                value={channelFilter}
+                onChange={setChannelFilter}
+                options={[
+                  { value: 'all', label: 'All Channels' },
+                  { value: 'TikTok', label: 'TikTok' },
+                  { value: 'Meta', label: 'Meta' },
+                  { value: 'Google', label: 'Google' }
+                ]}
+              />
 
               {/* Test Type Filter */}
-              <div style={{ minWidth: '150px' }}>
-                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>TEST TYPE</label>
-                <select
-                  value={testTypeFilter}
-                  onChange={(e) => setTestTypeFilter(e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '10px 12px', 
-                    background: '#282828', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    color: '#fff', 
-                    borderRadius: '6px', 
-                    fontSize: '13px',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="all">All Types</option>
-                  <option value="Shipping Test">Shipping</option>
-                  <option value="LP Angle Test">LP Angle</option>
-                  <option value="Upsell">Upsell</option>
-                </select>
-              </div>
+              <SearchableSelect
+                label="TEST TYPE"
+                value={testTypeFilter}
+                onChange={setTestTypeFilter}
+                options={[
+                  { value: 'all', label: 'All Types' },
+                  { value: 'Shipping Test', label: 'Shipping' },
+                  { value: 'LP Angle Test', label: 'LP Angle' },
+                  { value: 'Upsell', label: 'Upsell' }
+                ]}
+              />
 
               <button
                 onClick={() => alert('Test added successfully!')}
@@ -608,54 +565,30 @@ export default function TestingPage() {
           <div className="products-tab-content active">
             {/* Filters for AI Insights */}
             <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
-              <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>CHANNEL</label>
-                <select
-                  value={aiInsightsChannel}
-                  onChange={(e) => setAiInsightsChannel(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    background: '#282828',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '6px',
-                    color: '#fff',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="all">All Channels</option>
-                  <option value="google">🔍 Google</option>
-                  <option value="meta">📘 Meta</option>
-                  <option value="youtube">📺 YouTube</option>
-                  <option value="tiktok">🎵 TikTok</option>
-                </select>
-              </div>
-              <div style={{ flex: '1', minWidth: '200px' }}>
-                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '4px' }}>PRODUCT</label>
-                <select
-                  value={aiInsightsProduct}
-                  onChange={(e) => setAiInsightsProduct(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    background: '#282828',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '6px',
-                    color: '#fff',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <option value="all">All Products</option>
-                  <option value="collagen">🦴 Collagen</option>
-                  <option value="probiotics">💊 Probiotics 30B</option>
-                  <option value="hydrate">💧 Hydrate</option>
-                  <option value="mct">🥥 MCT Oil</option>
-                </select>
-              </div>
+              <SearchableSelect
+                label="CHANNEL"
+                value={aiInsightsChannel}
+                onChange={setAiInsightsChannel}
+                options={[
+                  { value: 'all', label: 'All Channels' },
+                  { value: 'google', label: '🔍 Google' },
+                  { value: 'meta', label: '📘 Meta' },
+                  { value: 'youtube', label: '📺 YouTube' },
+                  { value: 'tiktok', label: '🎵 TikTok' }
+                ]}
+              />
+              <SearchableSelect
+                label="PRODUCT"
+                value={aiInsightsProduct}
+                onChange={setAiInsightsProduct}
+                options={[
+                  { value: 'all', label: 'All Products' },
+                  { value: 'collagen', label: '🦴 Collagen' },
+                  { value: 'probiotics', label: '💊 Probiotics 30B' },
+                  { value: 'hydrate', label: '💧 Hydrate' },
+                  { value: 'mct', label: '🥥 MCT Oil' }
+                ]}
+              />
             </div>
 
             {/* AI Insights Cards */}
