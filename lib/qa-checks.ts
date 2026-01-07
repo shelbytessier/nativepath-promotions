@@ -1076,12 +1076,29 @@ export const qaCheckFunctions = {
 // Run QA checks on content
 export function runQAChecks(
   content: string,
-  channel: 'RTN' | 'ACQ' = 'RTN',
+  channel: string = 'RTN',
   enabledRules?: QACheckRule[]
 ): QACheckResult[] {
+  // Map channel names to RTN or ACQ
+  const channelMap: { [key: string]: 'RTN' | 'ACQ' } = {
+    'Email': 'RTN',
+    'SMS': 'RTN',
+    'Web': 'ACQ',
+    'Amazon': 'ACQ',
+    'YouTube': 'ACQ',
+    'Meta': 'ACQ',
+    'Facebook': 'ACQ',
+    'Instagram': 'ACQ',
+    'Affiliates': 'ACQ',
+    'RTN': 'RTN',
+    'ACQ': 'ACQ',
+  };
+
+  const mappedChannel = channelMap[channel] || 'RTN';
+  
   const rules = enabledRules || defaultQARules.filter(rule => rule.enabled);
   const applicableRules = rules.filter(
-    rule => rule.channels.length === 0 || rule.channels.includes(channel)
+    rule => rule.channels.length === 0 || rule.channels.includes(mappedChannel)
   );
 
   const results: QACheckResult[] = [];

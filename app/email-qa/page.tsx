@@ -85,8 +85,8 @@ export default function EmailQAPage() {
         };
       }
 
-      // Run QA checks on the page
-      const qaResults = runQAChecks(result.data.textContent, 'Email');
+      // Run QA checks on the page (Email is part of RTN channel)
+      const qaResults = runQAChecks(result.data.textContent, 'RTN');
       
       // Add additional checks
       const additionalIssues: any[] = [];
