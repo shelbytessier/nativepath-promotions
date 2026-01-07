@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import TestDetailModal from '@/components/TestDetailModal';
+import TestRequestModal from '@/components/TestRequestModal';
 import SearchableSelect from '@/components/SearchableSelect';
 
 export default function TestingPage() {
@@ -13,6 +14,7 @@ export default function TestingPage() {
   const [testTypeFilter, setTestTypeFilter] = useState('all');
   const [selectedTest, setSelectedTest] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTestRequestModalOpen, setIsTestRequestModalOpen] = useState(false);
   const [aiInsightsChannel, setAiInsightsChannel] = useState('all');
   const [aiInsightsProduct, setAiInsightsProduct] = useState('all');
 
@@ -260,7 +262,7 @@ export default function TestingPage() {
               />
 
               <button
-                onClick={() => alert('Test added successfully!')}
+                onClick={() => setIsTestRequestModalOpen(true)}
                 style={{ 
                   padding: '10px 20px', 
                   background: '#1db954', 
@@ -269,10 +271,13 @@ export default function TestingPage() {
                   borderRadius: '6px', 
                   fontWeight: '600', 
                   cursor: 'pointer',
-                  fontSize: '13px'
+                  fontSize: '13px',
+                  transition: 'all 0.2s'
                 }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#1ed760'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#1db954'}
               >
-                + New Test
+                🧪 Request New Test
               </button>
             </div>
 
@@ -762,6 +767,12 @@ export default function TestingPage() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           test={selectedTest}
+        />
+
+        {/* Test Request Modal */}
+        <TestRequestModal 
+          isOpen={isTestRequestModalOpen}
+          onClose={() => setIsTestRequestModalOpen(false)}
         />
       </div>
     </div>
