@@ -382,7 +382,7 @@ export function updatePromotion(id: string, updates: Partial<Promotion>): Promot
 }
 
 export function addCalendarEvent(
-  event: Omit<CalendarEvent, 'id' | 'status' | 'proposedAt'>
+  event: Omit<CalendarEvent, 'id' | 'proposedAt'>
 ): CalendarEvent {
   const currentUser = typeof window !== 'undefined' ? (() => {
     try {
