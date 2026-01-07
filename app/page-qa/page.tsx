@@ -7,7 +7,7 @@ import { runQAChecks, getRulesForChannel, defaultQARules } from '@/lib/qa-checks
 
 interface QACheck {
   id: string;
-  category: 'spelling' | 'offer' | 'pricing' | 'images' | 'links' | 'seo' | 'compliance';
+  category: 'spelling' | 'offer' | 'pricing' | 'images' | 'links' | 'seo' | 'compliance' | 'content';
   severity: 'critical' | 'warning' | 'info';
   message: string;
   location: string;
