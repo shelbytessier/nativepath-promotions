@@ -315,12 +315,37 @@ export default function PageManagerPage() {
                   onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                   onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
-                  <td style={{ padding: '14px 16px' }}>
-                    <div style={{ fontWeight: '600' }}>{page.name}</div>
-                    <div style={{ fontSize: '11px', color: '#3b82f6' }}>{page.url}</div>
+                  <td style={{ padding: '14px 16px', maxWidth: '300px' }}>
+                    <div style={{ 
+                      fontWeight: '600',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {page.name}
+                    </div>
+                    <div style={{ 
+                      fontSize: '11px', 
+                      color: '#3b82f6',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '250px'
+                    }}>
+                      {page.url}
+                    </div>
                   </td>
                   <td style={{ padding: '14px 12px' }}>
-                    <span style={{ fontSize: '12px' }}>{page.product}</span>
+                    <span style={{ 
+                      fontSize: '12px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: 'block',
+                      maxWidth: '150px'
+                    }}>
+                      {page.product}
+                    </span>
                   </td>
                   <td style={{ padding: '14px 12px' }}>
                     <span style={{ 

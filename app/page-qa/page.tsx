@@ -680,11 +680,41 @@ export default function PageQAPage() {
                     {page.status === 'passed' ? '✅ Passed' : page.status === 'critical' ? '🚨 Critical' : '⚠️ Issues'}
                   </span>
                 </td>
-                <td style={{ padding: '14px 16px' }}>
-                  <div style={{ fontWeight: '600', marginBottom: '4px', fontSize: '14px' }}>{page.pageName}</div>
-                  <div style={{ fontSize: '12px', color: '#3b82f6' }}>{page.pageUrl}</div>
+                <td style={{ padding: '14px 16px', maxWidth: '300px' }}>
+                  <div style={{ 
+                    fontWeight: '600', 
+                    marginBottom: '4px', 
+                    fontSize: '14px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    {page.pageName}
+                  </div>
+                  <div style={{ 
+                    fontSize: '12px', 
+                    color: '#3b82f6',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '250px'
+                  }}>
+                    {page.pageUrl}
+                  </div>
                 </td>
-                <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px' }}>{page.product}</td>
+                <td style={{ padding: '14px 12px' }}>
+                  <span style={{ 
+                    color: '#b3b3b3', 
+                    fontSize: '13px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: 'block',
+                    maxWidth: '150px'
+                  }}>
+                    {page.product}
+                  </span>
+                </td>
                 <td style={{ padding: '14px 12px', color: '#b3b3b3', fontSize: '13px' }}>{page.campaign}</td>
                 <td style={{ padding: '14px 12px' }}>
                   <span style={{

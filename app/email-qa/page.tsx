@@ -31,16 +31,35 @@ export default function EmailQAPage() {
   const [isChecking, setIsChecking] = useState(false);
   const [results, setResults] = useState<EmailQAResult | null>(null);
 
-  const extractLinksFromHTML = (html: string): string[] => {
-    const linkRegex = /href=["']([^"']+)["']/gi;
+  const extractLinksFromHTML = (input: string): string[] => {
     const links: string[] = [];
-    let match;
+    
+    // Check if input looks like plain URLs (one per line)
+    const lines = input.split('\n').map(line => line.trim()).filter(line => line);
+    const isPlainUrls = lines.every(line => 
+      line.startsWith('http://') || line.startsWith('https://') || line.startsWith('www.')
+    );
 
-    while ((match = linkRegex.exec(html)) !== null) {
-      const url = match[1];
-      // Filter out mailto, tel, and anchor links
-      if (!url.startsWith('mailto:') && !url.startsWith('tel:') && !url.startsWith('#')) {
-        links.push(url);
+    if (isPlainUrls) {
+      // Plain URLs - just use them directly
+      lines.forEach(url => {
+        if (!url.startsWith('mailto:') && !url.startsWith('tel:')) {
+          // Add https:// if missing
+          const fullUrl = url.startsWith('http') ? url : `https://${url}`;
+          links.push(fullUrl);
+        }
+      });
+    } else {
+      // HTML - extract from href attributes
+      const linkRegex = /href=["']([^"']+)["']/gi;
+      let match;
+
+      while ((match = linkRegex.exec(input)) !== null) {
+        const url = match[1];
+        // Filter out mailto, tel, and anchor links
+        if (!url.startsWith('mailto:') && !url.startsWith('tel:') && !url.startsWith('#')) {
+          links.push(url);
+        }
       }
     }
 
@@ -231,9 +250,9 @@ export default function EmailQAPage() {
           📧 How Email QA Works
         </div>
         <ul style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6', paddingLeft: '20px', margin: 0 }}>
-          <li>Paste your email HTML or send yourself a test email and copy the source</li>
-          <li>System extracts all links from the email</li>
-          <li>Each link is checked: accessibility, QA issues, broken links</li>
+          <li><strong>Option 1:</strong> Paste link(s) from your test email (one per line)</li>
+          <li><strong>Option 2:</strong> Forward test email to <strong>qa@nativepath.com</strong> - we'll auto-extract links</li>
+          <li>System checks each link: accessibility, QA issues, broken pages</li>
           <li>Get instant feedback before sending to customers</li>
           <li>Catch pricing errors, broken pages, and compliance issues</li>
         </ul>
@@ -303,14 +322,14 @@ export default function EmailQAPage() {
           </div>
         </div>
 
-        {/* Right Column - Email HTML */}
+        {/* Right Column - Email Links */}
         <div style={{ background: '#1a1a1a', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Email HTML</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Email Links</h3>
           
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PASTE EMAIL HTML</label>
+            <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PASTE LINKS FROM EMAIL (ONE PER LINE)</label>
             <textarea
-              placeholder="Paste your email HTML here... or send yourself a test email and copy the source code"
+              placeholder={`Paste links from your test email, one per line:\n\nhttps://nativepath.com/collagen-vday\nhttps://nativepath.com/checkout\nhttps://nativepath.com/unsubscribe\n\nOr forward test email to: qa@nativepath.com`}
               value={emailHTML}
               onChange={(e) => setEmailHTML(e.target.value)}
               style={{
@@ -322,10 +341,24 @@ export default function EmailQAPage() {
                 color: '#fff',
                 fontSize: '13px',
                 minHeight: '200px',
-                fontFamily: 'monospace',
                 resize: 'vertical',
               }}
             />
+          </div>
+
+          <div style={{
+            marginBottom: '16px',
+            padding: '12px',
+            background: 'rgba(29,185,84,0.1)',
+            border: '1px solid rgba(29,185,84,0.3)',
+            borderRadius: '6px',
+          }}>
+            <div style={{ fontSize: '12px', fontWeight: '600', color: '#1db954', marginBottom: '4px' }}>
+              💡 Pro Tip: Forward Test Emails
+            </div>
+            <div style={{ fontSize: '12px', color: '#b3b3b3' }}>
+              Forward your test email to <strong style={{ color: '#1db954' }}>qa@nativepath.com</strong> and we'll automatically extract and check all links for you!
+            </div>
           </div>
 
           <button
@@ -343,7 +376,7 @@ export default function EmailQAPage() {
               cursor: isChecking ? 'not-allowed' : 'pointer',
             }}
           >
-            {isChecking ? '🔄 Checking Links...' : '▶️ Run Email QA'}
+            {isChecking ? '🔄 Checking Links...' : '▶️ Check Links'}
           </button>
         </div>
       </div>
