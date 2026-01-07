@@ -453,11 +453,12 @@ export default function LaunchesPage() {
       </div>
       )}
 
-      {/* Upcoming Launches Section */}
+      {/* List View - Only show in list mode */}
+      {viewMode === 'list' && (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
           <h3 style={{ fontSize: '14px', color: '#888', fontWeight: 600, letterSpacing: '0.5px' }}>
-            {viewMode === 'calendar' ? 'UPCOMING LAUNCHES' : 'ALL LAUNCHES'}
+            ALL LAUNCHES
           </h3>
           <div style={{ position: 'relative', width: '280px' }}>
             <input
@@ -576,6 +577,7 @@ export default function LaunchesPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* Launch Performance Section */}
       <div style={{ marginTop: '48px' }}>
