@@ -116,6 +116,7 @@ const mockProducts: Product[] = [
 ];
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>(mockProducts);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -123,8 +124,16 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showGiftsOnly, setShowGiftsOnly] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  
+  // New product form state
+  const [newProductName, setNewProductName] = useState('');
+  const [newProductCode, setNewProductCode] = useState('');
+  const [newProductServings, setNewProductServings] = useState('');
+  const [newProductPrice, setNewProductPrice] = useState('');
+  const [newProductCogs, setNewProductCogs] = useState('');
+  const [newProductCategory, setNewProductCategory] = useState('');
 
-  const filteredProducts = mockProducts.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = searchTerm === '' || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.code.toLowerCase().includes(searchTerm.toLowerCase());
@@ -143,6 +152,48 @@ export default function ProductsPage() {
     setTypeFilter('all');
     setStatusFilter('all');
     setShowGiftsOnly(false);
+  };
+
+  const handleCreateProduct = () => {
+    // Validate inputs
+    if (!newProductName || !newProductCode || !newProductServings || !newProductPrice || !newProductCogs || !newProductCategory) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const price = parseFloat(newProductPrice);
+    const cogs = parseFloat(newProductCogs);
+    const margin = Math.round(((price - cogs) / price) * 100);
+
+    const newProduct: Product = {
+      id: newProductCode.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      name: newProductName,
+      code: newProductCode,
+      servings: parseInt(newProductServings),
+      version: 'v1.0',
+      emoji: newProductCategory === 'collagen' ? '🥛' : newProductCategory === 'supplements' ? '💊' : '🎁',
+      status: 'active',
+      category: newProductCategory,
+      price: price,
+      cogs: cogs,
+      margin: margin,
+      stock: 0,
+      channels: ['Web'],
+      isGift: newProductCategory === 'gifts'
+    };
+
+    setProducts([...products, newProduct]);
+    
+    // Reset form
+    setNewProductName('');
+    setNewProductCode('');
+    setNewProductServings('');
+    setNewProductPrice('');
+    setNewProductCogs('');
+    setNewProductCategory('');
+    setIsCreateModalOpen(false);
+    
+    alert('Product created successfully!');
   };
 
   const handleProductClick = (product: Product) => {
@@ -493,6 +544,8 @@ export default function ProductsPage() {
                 <input
                   type="text"
                   placeholder="e.g., Collagen Peptides"
+                  value={newProductName}
+                  onChange={(e) => setNewProductName(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '10px 12px',
@@ -511,6 +564,8 @@ export default function ProductsPage() {
                   <input
                     type="text"
                     placeholder="e.g., COL-25"
+                    value={newProductCode}
+                    onChange={(e) => setNewProductCode(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -527,6 +582,8 @@ export default function ProductsPage() {
                   <input
                     type="number"
                     placeholder="25"
+                    value={newProductServings}
+                    onChange={(e) => setNewProductServings(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -547,6 +604,8 @@ export default function ProductsPage() {
                     type="number"
                     placeholder="33.99"
                     step="0.01"
+                    value={newProductPrice}
+                    onChange={(e) => setNewProductPrice(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -564,6 +623,8 @@ export default function ProductsPage() {
                     type="number"
                     placeholder="15.34"
                     step="0.01"
+                    value={newProductCogs}
+                    onChange={(e) => setNewProductCogs(e.target.value)}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -580,6 +641,8 @@ export default function ProductsPage() {
               <div>
                 <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>CATEGORY</label>
                 <select
+                  value={newProductCategory}
+                  onChange={(e) => setNewProductCategory(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '10px 12px',
@@ -600,10 +663,7 @@ export default function ProductsPage() {
 
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
-                onClick={() => {
-                  alert('Product created successfully!');
-                  setIsCreateModalOpen(false);
-                }}
+                onClick={handleCreateProduct}
                 style={{
                   flex: 1,
                   padding: '12px',

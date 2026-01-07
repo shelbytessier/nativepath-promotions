@@ -20,6 +20,7 @@ const campaignHubItems = [
 ];
 
 const toolsItems = [
+  { href: '/page-qa', label: 'Page QA', emoji: '✅' },
   { href: '/margin-calc', label: 'Margin Calc', emoji: '🧮' },
 ];
 
