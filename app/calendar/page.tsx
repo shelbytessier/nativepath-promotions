@@ -22,6 +22,8 @@ interface LandingPage {
   painPoint: string;
   status: 'live' | 'dev' | 'ended';
   qaStatus?: 'ready-for-qa' | 'in-qa' | 'qa-complete' | 'qa-issues';
+  qaIssues?: number;
+  qaLastChecked?: string;
 }
 
 export default function PageManagerPage() {
@@ -36,6 +38,8 @@ export default function PageManagerPage() {
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
   const [selectedPage, setSelectedPage] = useState<LandingPage | null>(null);
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
+  const [showQASection, setShowQASection] = useState(true);
+  const [isRunningQA, setIsRunningQA] = useState(false);
 
   const pages: LandingPage[] = [
     {
@@ -52,7 +56,9 @@ export default function PageManagerPage() {
       leadAngle: ['Fear', 'Problem/Solution'],
       painPoint: 'Joint Pain',
       status: 'live',
-      qaStatus: 'in-qa'
+      qaStatus: 'qa-issues',
+      qaIssues: 3,
+      qaLastChecked: '2 hours ago'
     },
     {
       id: '2',
@@ -68,7 +74,9 @@ export default function PageManagerPage() {
       leadAngle: ['Hidden Truth'],
       painPoint: 'Low Energy',
       status: 'live',
-      qaStatus: 'qa-complete'
+      qaStatus: 'qa-complete',
+      qaIssues: 0,
+      qaLastChecked: '1 day ago'
     },
     {
       id: '3',
@@ -175,6 +183,136 @@ export default function PageManagerPage() {
             <div style={{ fontSize: '28px', fontWeight: '700', color: '#888' }}>{endedCount}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Unpublished</div>
           </div>
+        </div>
+
+        {/* QA Stats Section */}
+        <div style={{ 
+          background: '#1a1a1a', 
+          borderRadius: '12px', 
+          border: '1px solid rgba(255,255,255,0.08)', 
+          marginBottom: '24px',
+          overflow: 'hidden'
+        }}>
+          {/* QA Header */}
+          <div 
+            style={{ 
+              padding: '20px 24px', 
+              borderBottom: showQASection ? '1px solid rgba(255,255,255,0.08)' : 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer'
+            }}
+            onClick={() => setShowQASection(!showQASection)}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '20px' }}>{showQASection ? '▼' : '▶'}</span>
+              <div>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '4px' }}>
+                  Page QA Status
+                </h3>
+                <div style={{ fontSize: '12px', color: '#888' }}>
+                  {pages.filter(p => p.qaStatus).length} pages tracked • {pages.filter(p => p.qaIssues && p.qaIssues > 0).reduce((sum, p) => sum + (p.qaIssues || 0), 0)} total issues
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <Link href="/page-qa/settings">
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    padding: '8px 16px',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                >
+                  ⚙️ Customize Checks
+                </button>
+              </Link>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsRunningQA(true);
+                  setTimeout(() => setIsRunningQA(false), 2000);
+                }}
+                disabled={isRunningQA}
+                style={{
+                  padding: '8px 16px',
+                  background: isRunningQA ? '#666' : '#1db954',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: isRunningQA ? '#ccc' : '#000',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: isRunningQA ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => { if (!isRunningQA) e.currentTarget.style.background = '#1ed760'; }}
+                onMouseOut={(e) => { if (!isRunningQA) e.currentTarget.style.background = '#1db954'; }}
+              >
+                {isRunningQA ? '🔄 Running...' : '▶️ Run All QA Checks'}
+              </button>
+            </div>
+          </div>
+
+          {/* QA Stats Grid */}
+          {showQASection && (
+            <div style={{ padding: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+                <div style={{ background: '#282828', padding: '20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', fontWeight: '600' }}>TOTAL PAGES</div>
+                  <div style={{ fontSize: '28px', fontWeight: '700' }}>{pages.filter(p => p.qaStatus).length}</div>
+                </div>
+                <div style={{ background: '#282828', padding: '20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', fontWeight: '600' }}>PASSED</div>
+                  <div style={{ fontSize: '28px', fontWeight: '700', color: '#1db954' }}>
+                    {pages.filter(p => p.qaStatus === 'qa-complete').length}
+                  </div>
+                </div>
+                <div style={{ background: '#282828', padding: '20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', fontWeight: '600' }}>ISSUES</div>
+                  <div style={{ fontSize: '28px', fontWeight: '700', color: '#f59e0b' }}>
+                    {pages.filter(p => p.qaStatus === 'qa-issues').length}
+                  </div>
+                </div>
+                <div style={{ background: '#282828', padding: '20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', fontWeight: '600' }}>IN QA</div>
+                  <div style={{ fontSize: '28px', fontWeight: '700', color: '#3b82f6' }}>
+                    {pages.filter(p => p.qaStatus === 'in-qa' || p.qaStatus === 'ready-for-qa').length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Checks Info */}
+              <div style={{
+                background: 'rgba(29,185,84,0.1)',
+                border: '1px solid rgba(29,185,84,0.3)',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <span style={{ fontSize: '20px' }}>✅</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: '#1db954', marginBottom: '2px' }}>
+                    30 Active QA Checks
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>
+                    9 critical • 16 warnings • 5 info
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Filters Row */}
@@ -524,6 +662,34 @@ export default function PageManagerPage() {
                     </div>
                   </td>
                 </tr>
+                {/* QA Info Row */}
+                {page.qaStatus && page.qaStatus !== 'qa-complete' && (
+                  <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: index < filteredPages.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                    <td colSpan={11} style={{ padding: '12px 16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '11px', color: '#888' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ color: page.qaIssues && page.qaIssues > 0 ? '#f59e0b' : '#1db954' }}>
+                            {page.qaIssues && page.qaIssues > 0 ? '⚠️' : '✅'}
+                          </span>
+                          <span>
+                            {page.qaIssues || 0} issue{page.qaIssues !== 1 ? 's' : ''} found
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>🕐</span>
+                          <span>Last checked: {page.qaLastChecked || 'Never'}</span>
+                        </div>
+                        {page.qaIssues && page.qaIssues > 0 && (
+                          <Link href={`/page-qa/review/${page.id}`}>
+                            <span style={{ color: '#3b82f6', textDecoration: 'underline', cursor: 'pointer' }}>
+                              View issues →
+                            </span>
+                          </Link>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
               ))}
             </tbody>
           </table>
