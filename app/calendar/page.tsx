@@ -665,32 +665,6 @@ export default function PageManagerPage() {
                           </button>
                         </Link>
                       )}
-                      <button
-                      style={{ 
-                        background: '#282828', 
-                        border: 'none', 
-                        color: '#888', 
-                        padding: '4px 12px', 
-                        borderRadius: '4px', 
-                        fontSize: '11px', 
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.background = '#383838';
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.background = '#282828';
-                        e.currentTarget.style.color = '#888';
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        alert(`View details for ${page.name}`);
-                      }}
-                    >
-                      View
-                    </button>
                     </div>
                   </td>
                 </tr>
