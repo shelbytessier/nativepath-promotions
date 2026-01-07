@@ -1985,6 +1985,19 @@ body {
   color: #1db954;
 }
 
+/* Offers Grid - Responsive */
+.offers-grid-new {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .offers-grid-new {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ========================================= */
 /* TAB NAVIGATION STYLES */
 /* ========================================= */
