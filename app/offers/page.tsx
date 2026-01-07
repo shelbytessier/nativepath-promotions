@@ -67,6 +67,27 @@ const mockOffers: Offer[] = [
     blendedMargin: 68,
     pagesCount: 2,
   },
+  {
+    id: 'SPRNG-LIPO30',
+    productName: 'Liposomal Vitamin C',
+    productCode: 'LIPO-30',
+    servings: 30,
+    emoji: '🍊',
+    status: 'active',
+    channels: [
+      { name: 'Web', active: true },
+      { name: 'Amazon', active: true },
+      { name: 'Shopify', active: false },
+    ],
+    campaign: 'spring',
+    tiers: {
+      single: { price: 39.99, shipping: 9.00 },
+      threePack: { originalPrice: 119.97, price: 95.97, gift: 'Frother', savePercent: 30 },
+      sixPack: { originalPrice: 239.94, price: 155.94, gift: 'Frother', savePercent: 40 },
+    },
+    blendedMargin: 69,
+    pagesCount: 1,
+  },
 ];
 
 export default function OffersLibraryPage() {
@@ -307,7 +328,7 @@ export default function OffersLibraryPage() {
             style={{ cursor: 'pointer' }}
           >
             {/* Image/Icon Header */}
-            <div className="offer-card-image" style={offer.productCode === 'COL-25' ? { height: '150px' } : {}}>
+            <div className="offer-card-image" style={(offer.productCode === 'COL-25' || offer.productCode === 'LIPO-30') ? { height: '150px' } : {}}>
               {offer.productCode === 'COL-25' ? (
                 <img 
                   src="/images/products/collagen-lifestyle-1.jpeg" 
@@ -317,6 +338,17 @@ export default function OffersLibraryPage() {
                     height: '100%', 
                     objectFit: 'cover',
                     objectPosition: 'center 65%'
+                  }}
+                />
+              ) : offer.productCode === 'LIPO-30' ? (
+                <img 
+                  src="/images/products/Lipo-lifestyle-1.jpg" 
+                  alt={offer.productName}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                    objectPosition: 'center 50%'
                   }}
                 />
               ) : (
@@ -375,6 +407,22 @@ export default function OffersLibraryPage() {
                       />
                     </div>
                   )}
+                  {offer.productCode === 'LIPO-30' && (
+                    <div style={{ 
+                      width: '80px', 
+                      height: '80px', 
+                      margin: '8px auto 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <img 
+                        src="/images/products/Lipo-1.png" 
+                        alt="Single"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
                   <div className="offer-tier-price-row">
                     <span className="offer-tier-price">${offer.tiers.single.price}</span>
                   </div>
@@ -401,6 +449,22 @@ export default function OffersLibraryPage() {
                     }}>
                       <img 
                         src="/images/products/collagen-25s-3.png" 
+                        alt="3-Pack"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
+                  {offer.productCode === 'LIPO-30' && (
+                    <div style={{ 
+                      width: '80px', 
+                      height: '80px', 
+                      margin: '8px auto 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <img 
+                        src="/images/products/Lipo-3.png" 
                         alt="3-Pack"
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                       />
@@ -436,6 +500,22 @@ export default function OffersLibraryPage() {
                     }}>
                       <img 
                         src="/images/products/collagen-25s-6.png" 
+                        alt="6-Pack"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
+                  {offer.productCode === 'LIPO-30' && (
+                    <div style={{ 
+                      width: '80px', 
+                      height: '80px', 
+                      margin: '8px auto 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <img 
+                        src="/images/products/Lipo-6.png" 
                         alt="6-Pack"
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                       />
