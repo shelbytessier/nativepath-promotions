@@ -291,7 +291,22 @@ export default function PageReviewPage() {
             ← Back to Page Manager
           </Link>
           <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '4px' }}>{page.pageName}</h2>
-          <div style={{ fontSize: '12px', color: '#3b82f6' }}>{page.pageUrl}</div>
+          <a 
+            href={page.pageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ 
+              fontSize: '12px', 
+              color: '#3b82f6',
+              textDecoration: 'none',
+              cursor: 'pointer',
+              display: 'block'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+            onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+          >
+            {page.pageUrl}
+          </a>
         </div>
 
         {/* Actions */}
