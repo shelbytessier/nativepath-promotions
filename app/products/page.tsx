@@ -121,6 +121,7 @@ export default function ProductsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
   const [showGiftsOnly, setShowGiftsOnly] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filteredProducts = mockProducts.filter((product) => {
     const matchesSearch = searchTerm === '' || 
@@ -291,8 +292,26 @@ export default function ProductsPage() {
             <option value="all">All Products</option>
             <option value="gifts">🎁 Free Gift Items</option>
           </select>
-                  </div>
-                </div>
+        </div>
+
+        {/* Add Product Button */}
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          style={{
+            padding: '10px 20px',
+            background: '#1db954',
+            color: '#000',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontSize: '13px',
+            alignSelf: 'flex-end',
+          }}
+        >
+          + Add Product
+        </button>
+      </div>
 
       {/* Results Info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', color: '#888', fontSize: '12px' }}>
@@ -377,6 +396,216 @@ export default function ProductsPage() {
         onClose={() => setIsModalOpen(false)}
         product={selectedProduct}
       />
+
+      {/* Create Product Modal */}
+      {isCreateModalOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+          onClick={() => setIsCreateModalOpen(false)}
+        >
+          <div 
+            style={{
+              background: '#1a1a1a',
+              borderRadius: '12px',
+              padding: '32px',
+              maxWidth: '600px',
+              width: '100%',
+              position: 'relative',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setIsCreateModalOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'rgba(255,255,255,0.1)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                fontSize: '20px',
+                color: '#fff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              ×
+            </button>
+
+            <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '16px' }}>
+              Add New Product
+            </h2>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
+              Create a new product in the catalog. (Coming soon)
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+              <div>
+                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PRODUCT NAME</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Collagen Peptides"
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>PRODUCT CODE</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., COL-25"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: '#282828',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      fontSize: '13px',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>SERVINGS</label>
+                  <input
+                    type="number"
+                    placeholder="25"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: '#282828',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      fontSize: '13px',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>BASE PRICE</label>
+                  <input
+                    type="number"
+                    placeholder="33.99"
+                    step="0.01"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: '#282828',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      fontSize: '13px',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>COGS</label>
+                  <input
+                    type="number"
+                    placeholder="15.34"
+                    step="0.01"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: '#282828',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      fontSize: '13px',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>CATEGORY</label>
+                <select
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    background: '#282828',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: '13px',
+                  }}
+                >
+                  <option value="">Select Category</option>
+                  <option value="collagen">Collagen</option>
+                  <option value="supplements">Supplements</option>
+                  <option value="gifts">Gifts</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => {
+                  alert('Product creation coming soon!');
+                  setIsCreateModalOpen(false);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  background: '#1db954',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: '#000',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                Create Product
+              </button>
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                style={{
+                  padding: '12px 24px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

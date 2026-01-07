@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import PageRequestModal from '@/components/PageRequestModal';
+import PageDetailModal from '@/components/PageDetailModal';
+import OfferDetailModal from '@/components/OfferDetailModal';
 
 interface LandingPage {
   id: string;
@@ -22,6 +24,10 @@ interface LandingPage {
 export default function PageManagerPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [isPageDetailModalOpen, setIsPageDetailModalOpen] = useState(false);
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
+  const [selectedPage, setSelectedPage] = useState<LandingPage | null>(null);
+  const [selectedOffer, setSelectedOffer] = useState<any>(null);
 
   const pages: LandingPage[] = [
     {
@@ -187,6 +193,10 @@ export default function PageManagerPage() {
                     cursor: 'pointer',
                     transition: 'background 0.2s'
                   }}
+                  onClick={() => {
+                    setSelectedPage(page);
+                    setIsPageDetailModalOpen(true);
+                  }}
                   onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                   onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
@@ -219,12 +229,24 @@ export default function PageManagerPage() {
                       {page.channelEmoji} {page.channel}
                     </span>
                   </td>
-                  <td style={{ padding: '14px 12px' }}>
+                  <td 
+                    style={{ padding: '14px 12px' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedOffer({
+                        id: page.offer,
+                        name: page.product,
+                        code: page.offer,
+                      });
+                      setIsOfferModalOpen(true);
+                    }}
+                  >
                     <span style={{ 
                       fontFamily: 'monospace', 
                       fontSize: '11px', 
                       color: '#1db954', 
-                      cursor: 'pointer' 
+                      cursor: 'pointer',
+                      textDecoration: 'underline' 
                     }}>
                       {page.offer}
                     </span>
@@ -313,6 +335,26 @@ export default function PageManagerPage() {
         <PageRequestModal 
           isOpen={isRequestModalOpen}
           onClose={() => setIsRequestModalOpen(false)}
+        />
+
+        {/* Page Detail Modal */}
+        <PageDetailModal
+          isOpen={isPageDetailModalOpen}
+          onClose={() => {
+            setIsPageDetailModalOpen(false);
+            setSelectedPage(null);
+          }}
+          page={selectedPage}
+        />
+
+        {/* Offer Detail Modal */}
+        <OfferDetailModal
+          isOpen={isOfferModalOpen}
+          onClose={() => {
+            setIsOfferModalOpen(false);
+            setSelectedOffer(null);
+          }}
+          offer={selectedOffer}
         />
       </div>
     </div>

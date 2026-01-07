@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Modal from './Modal';
 
 interface CampaignDetailModalProps {
@@ -18,8 +19,30 @@ interface CampaignDetailModalProps {
   } | null;
 }
 
+// Mock pages data
+const mockPages = [
+  { id: 1, name: 'VDay - Meta - Joint Pain', offer: 'VDAY-COL25', channel: 'Meta', status: 'live' },
+  { id: 2, name: 'VDay - Meta - Energy', offer: 'VDAY-COL25', channel: 'Meta', status: 'live' },
+  { id: 3, name: 'VDay - Google - Testimonial', offer: 'VDAY-COL25', channel: 'Google', status: 'live' },
+  { id: 4, name: 'VDay - Meta - Hydrate', offer: 'VDAY-HYD30', channel: 'Meta', status: 'live' },
+  { id: 5, name: 'VDay - TikTok - Video Testimonials', offer: 'VDAY-HYD30', channel: 'TikTok', status: 'live' },
+  { id: 6, name: 'VDay - Meta - Probiotics', offer: 'VDAY-PRO60', channel: 'Meta', status: 'live' },
+  { id: 7, name: 'VDay - Meta - Gut Health', offer: 'VDAY-PRO60', channel: 'Meta', status: 'dev' },
+  { id: 8, name: 'VDay - Google - Pain Free', offer: 'VDAY-COL25', channel: 'Google', status: 'dev' },
+];
+
 export default function CampaignDetailModal({ isOpen, onClose, campaign }: CampaignDetailModalProps) {
+  const [pageFilter, setPageFilter] = useState<'all' | 'live' | 'dev'>('all');
+
   if (!campaign) return null;
+
+  const filteredPages = mockPages.filter(page => {
+    if (pageFilter === 'all') return true;
+    return page.status === pageFilter;
+  });
+
+  const liveCount = mockPages.filter(p => p.status === 'live').length;
+  const devCount = mockPages.filter(p => p.status === 'dev').length;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -54,7 +77,7 @@ export default function CampaignDetailModal({ isOpen, onClose, campaign }: Campa
         </div>
 
         {/* Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
           <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '6px', textAlign: 'center' }}>
             <div style={{ fontSize: '28px', fontWeight: '700', color: '#1db954', marginBottom: '4px' }}>{campaign.offers}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Offers</div>
@@ -64,23 +87,58 @@ export default function CampaignDetailModal({ isOpen, onClose, campaign }: Campa
             <div style={{ fontSize: '12px', color: '#888' }}>Pages</div>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '6px', textAlign: 'center' }}>
-            <div style={{ fontSize: '28px', fontWeight: '700', color: '#eab308', marginBottom: '4px' }}>{campaign.daysLeft}</div>
-            <div style={{ fontSize: '12px', color: '#888' }}>Days Left</div>
+            <div style={{ fontSize: '28px', fontWeight: '700', color: '#1db954', marginBottom: '4px' }}>{liveCount}</div>
+            <div style={{ fontSize: '12px', color: '#888' }}>Live</div>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '6px', textAlign: 'center' }}>
+            <div style={{ fontSize: '28px', fontWeight: '700', color: '#eab308', marginBottom: '4px' }}>{devCount}</div>
+            <div style={{ fontSize: '12px', color: '#888' }}>In Dev</div>
           </div>
         </div>
 
-        {/* Details */}
-        <div style={{
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '20px',
-        }}>
-          <h3 style={{ fontSize: '14px', color: '#888', fontWeight: '600', marginBottom: '12px' }}>CAMPAIGN DETAILS</h3>
-          <p style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: '1.6' }}>
-            Campaign information, channel strategies, and performance metrics will be displayed here.
-          </p>
+        {/* Pages in this Campaign */}
+        <div className="campaign-modal-section">
+          <div className="campaign-modal-section-title">PAGES IN THIS CAMPAIGN</div>
+          
+          {/* Filter Chips */}
+          <div className="campaign-pages-filter">
+            <span 
+              className={`campaign-page-filter ${pageFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setPageFilter('all')}
+            >
+              All ({mockPages.length})
+            </span>
+            <span 
+              className={`campaign-page-filter ${pageFilter === 'live' ? 'active' : ''}`}
+              onClick={() => setPageFilter('live')}
+            >
+              Live ({liveCount})
+            </span>
+            <span 
+              className={`campaign-page-filter ${pageFilter === 'dev' ? 'active' : ''}`}
+              onClick={() => setPageFilter('dev')}
+            >
+              In Dev ({devCount})
+            </span>
+          </div>
+
+          {/* Pages List */}
+          <div className="campaign-pages-list">
+            {filteredPages.map((page) => (
+              <div key={page.id} className="campaign-page-item">
+                <div className="campaign-page-left">
+                  <div className="campaign-page-name">{page.name}</div>
+                  <div className="campaign-page-meta">{page.offer} • {page.channel}</div>
+                </div>
+                <div className="campaign-page-right">
+                  <span className={`campaign-page-status ${page.status}`}>
+                    {page.status === 'live' ? '● Live' : 'In Dev'}
+                  </span>
+                  <span className="campaign-page-view">View →</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <button

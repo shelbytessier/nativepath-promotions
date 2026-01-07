@@ -1934,3 +1934,156 @@ body {
   font-size: 14px;
   color: #888;
 }
+
+/* ========================================= */
+/* TAB NAVIGATION STYLES */
+/* ========================================= */
+
+.products-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 24px;
+}
+
+.products-tab {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+  bottom: -1px;
+}
+
+.products-tab:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.05);
+}
+
+.products-tab.active {
+  color: #fff;
+  font-weight: 600;
+  border-bottom-color: #1db954;
+}
+
+.products-tab-content {
+  display: none;
+}
+
+.products-tab-content.active {
+  display: block;
+}
+
+/* Campaign Pages Filter */
+.campaign-pages-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.campaign-page-filter {
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  font-size: 11px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.campaign-page-filter:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.campaign-page-filter.active {
+  background: rgba(29,185,84,0.15);
+  border-color: rgba(29,185,84,0.3);
+  color: #1db954;
+}
+
+/* Campaign Pages List */
+.campaign-pages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.campaign-page-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.campaign-page-item:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.campaign-page-left {
+  flex: 1;
+}
+
+.campaign-page-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #3b82f6;
+  margin-bottom: 2px;
+}
+
+.campaign-page-meta {
+  font-size: 10px;
+  color: #555;
+}
+
+.campaign-page-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.campaign-page-status {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.campaign-page-status.live {
+  background: rgba(29,185,84,0.15);
+  color: #1db954;
+}
+
+.campaign-page-status.dev {
+  background: rgba(251,191,36,0.15);
+  color: #fbbf24;
+}
+
+.campaign-page-view {
+  font-size: 11px;
+  color: #666;
+}
+
+/* Campaign Modal Sections */
+.campaign-modal-section {
+  margin-bottom: 24px;
+}
+
+.campaign-modal-section-title {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}

@@ -7,6 +7,7 @@ export default function CampaignsPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 1)); // January 2026
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const campaigns = [
     {
@@ -112,7 +113,7 @@ export default function CampaignsPage() {
     setIsModalOpen(true);
   };
 
-  return (
+    return (
     <div className="p-8">
       <div className="content-header">
         <h1 className="header-title">Campaigns</h1>
@@ -131,7 +132,7 @@ export default function CampaignsPage() {
           {/* Calendar Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button 
+          <button
                 onClick={() => changeMonth(-1)}
                 style={{ 
                   background: 'rgba(255,255,255,0.06)', 
@@ -148,11 +149,11 @@ export default function CampaignsPage() {
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
               >
                 ←
-              </button>
+          </button>
               <span style={{ fontSize: '20px', fontWeight: '700', minWidth: '180px', textAlign: 'center' }}>
                 {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
               </span>
-              <button 
+          <button
                 onClick={() => changeMonth(1)}
                 style={{ 
                   background: 'rgba(255,255,255,0.06)', 
@@ -169,8 +170,8 @@ export default function CampaignsPage() {
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
               >
                 →
-              </button>
-              <button 
+          </button>
+          <button
                 onClick={jumpToToday}
                 style={{ 
                   background: 'rgba(29, 185, 84, 0.15)', 
@@ -187,23 +188,41 @@ export default function CampaignsPage() {
                 onMouseOut={(e) => e.currentTarget.style.background = 'rgba(29, 185, 84, 0.15)'}
               >
                 Today
-              </button>
-            </div>
+          </button>
+          <button
+                onClick={() => setIsCreateModalOpen(true)}
+                style={{ 
+                  background: '#1db954', 
+                  border: 'none', 
+                  color: '#000', 
+                  padding: '8px 16px', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer', 
+                  fontSize: '13px', 
+                  fontWeight: '600', 
+                  transition: 'all 0.2s' 
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#1ed760'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#1db954'}
+              >
+                + New Campaign
+          </button>
+        </div>
             <div style={{ display: 'flex', gap: '20px', fontSize: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '24px', height: '8px', background: 'linear-gradient(90deg, #1db954, #15803d)', borderRadius: '4px' }}></div>
                 <span style={{ color: '#b3b3b3' }}>Live</span>
-              </div>
+                  </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '24px', height: '8px', background: 'linear-gradient(90deg, #eab308, #a16207)', borderRadius: '4px' }}></div>
                 <span style={{ color: '#b3b3b3' }}>Prep</span>
-              </div>
+                    </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '24px', height: '8px', background: 'linear-gradient(90deg, #3b82f6, #1d4ed8)', borderRadius: '4px' }}></div>
                 <span style={{ color: '#b3b3b3' }}>Upcoming</span>
-              </div>
-            </div>
-          </div>
+                    </div>
+                    </div>
+                  </div>
 
           {/* Calendar Grid */}
           <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.03)' }}>
@@ -223,10 +242,24 @@ export default function CampaignsPage() {
                   <div className="campaign-cal-date">{day.date}</div>
                   {/* Show campaign bars on specific dates */}
                   {!day.isOtherMonth && day.date >= 25 && day.date <= 31 && currentMonth.getMonth() === 0 && (
-                    <div className="campaign-bar prep" title="Valentine's Day Prep">VDAY-26</div>
+                    <div 
+                      className="campaign-bar prep" 
+                      title="Valentine's Day Prep"
+                      onClick={() => handleCampaignClick(campaigns[0])}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      VDAY-26
+                    </div>
                   )}
                   {!day.isOtherMonth && day.date >= 1 && day.date <= 14 && currentMonth.getMonth() === 1 && (
-                    <div className="campaign-bar live" title="Valentine's Day Live">VDAY-26</div>
+                    <div 
+                      className="campaign-bar live" 
+                      title="Valentine's Day Live"
+                      onClick={() => handleCampaignClick(campaigns[0])}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      VDAY-26
+                    </div>
                   )}
                 </div>
               ))}
@@ -301,6 +334,213 @@ export default function CampaignsPage() {
           onClose={() => setIsModalOpen(false)}
           campaign={selectedCampaign}
         />
+
+        {/* Create Campaign Modal */}
+        {isCreateModalOpen && (
+          <div 
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px',
+            }}
+            onClick={() => setIsCreateModalOpen(false)}
+          >
+            <div 
+              style={{
+                background: '#1a1a1a',
+                borderRadius: '12px',
+                padding: '32px',
+                maxWidth: '600px',
+                width: '100%',
+                position: 'relative',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+                      <button
+                onClick={() => setIsCreateModalOpen(false)}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  fontSize: '20px',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ×
+                      </button>
+
+              <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '16px' }}>
+                Create New Campaign
+              </h2>
+              <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
+                Set up a new promotional campaign with dates and products.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>CAMPAIGN NAME</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Spring Renewal"
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: '#282828',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      fontSize: '13px',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>CAMPAIGN CODE</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., SPRNG-26"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        background: '#282828',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '6px',
+                        color: '#fff',
+                        fontSize: '13px',
+                        textTransform: 'uppercase',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>EMOJI</label>
+                    <input
+                      type="text"
+                      placeholder="🌸"
+                      maxLength={2}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        background: '#282828',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '6px',
+                        color: '#fff',
+                        fontSize: '20px',
+                        textAlign: 'center',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>START DATE</label>
+                    <input
+                      type="date"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        background: '#282828',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '6px',
+                        color: '#fff',
+                        fontSize: '13px',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>END DATE</label>
+                    <input
+                      type="date"
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        background: '#282828',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '6px',
+                        color: '#fff',
+                        fontSize: '13px',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', color: '#b3b3b3', display: 'block', marginBottom: '6px' }}>DESCRIPTION (OPTIONAL)</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Campaign details and notes..."
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: '#282828',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      color: '#fff',
+                      fontSize: '13px',
+                      resize: 'vertical',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  onClick={() => {
+                    alert('Campaign creation coming soon!');
+                    setIsCreateModalOpen(false);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: '#1db954',
+                    border: 'none',
+                    borderRadius: '6px',
+                    color: '#000',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Create Campaign
+                </button>
+                <button
+                  onClick={() => setIsCreateModalOpen(false)}
+                  style={{
+                    padding: '12px 24px',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: 'none',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+            </div>
+          )}
       </div>
     </div>
   );

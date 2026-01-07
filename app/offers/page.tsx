@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import OfferDetailModal from '@/components/OfferDetailModal';
+import CreateOfferModal from '@/components/CreateOfferModal';
 
 interface Offer {
   id: string;
@@ -74,6 +75,7 @@ export default function OffersLibraryPage() {
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filteredOffers = mockOffers.filter((offer) => {
     const matchesSearch = searchTerm === '' || 
@@ -268,6 +270,7 @@ export default function OffersLibraryPage() {
         </div>
 
         <button 
+          onClick={() => setIsCreateModalOpen(true)}
           style={{ 
             padding: '10px 20px', 
             background: '#1db954', 
@@ -409,6 +412,13 @@ export default function OffersLibraryPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         offer={selectedOffer}
+      />
+
+      {/* Create Offer Modal */}
+      {/* Create Offer Modal */}
+      <CreateOfferModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       />
     </div>
   );
