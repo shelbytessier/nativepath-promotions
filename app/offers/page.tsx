@@ -310,13 +310,14 @@ export default function OffersLibraryPage() {
             <div className="offer-card-image">
               {offer.productCode === 'COL-25' ? (
                 <img 
-                  src="/images/products/collagen-lifestyle-1.jpeg" 
+                  src="/images/products/collagen.png" 
                   alt={offer.productName}
                   style={{ 
                     width: '100%', 
                     height: '100%', 
-                    objectFit: 'cover',
-                    objectPosition: 'center'
+                    objectFit: 'contain',
+                    padding: '20px',
+                    background: 'linear-gradient(135deg, rgba(40,40,40,1) 0%, rgba(20,20,20,1) 100%)'
                   }}
                 />
               ) : (
