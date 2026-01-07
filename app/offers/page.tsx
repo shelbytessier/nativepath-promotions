@@ -119,14 +119,14 @@ export default function OffersLibraryPage() {
         {
           label: 'SINGLE',
           price: offer.tiers.single.price,
-          shipping: offer.tiers.single.shipping > 0 ? `+$${offer.tiers.single.shipping.toFixed(2)} ship` : 'FREE ship',
+          shipping: offer.tiers.single.shipping > 0 ? `+$${offer.tiers.single.shipping.toFixed(2)} ship` : 'FREE Shipping',
           perServing: `$${(offer.tiers.single.price / offer.servings).toFixed(2)}/srv`,
         },
         {
           label: '3-PACK',
           price: offer.tiers.threePack.price,
           originalPrice: offer.tiers.threePack.originalPrice,
-          shipping: 'FREE ship',
+          shipping: 'FREE Shipping',
           gift: offer.tiers.threePack.gift,
           save: `Save $${(offer.tiers.threePack.originalPrice - offer.tiers.threePack.price).toFixed(2)} (${offer.tiers.threePack.savePercent}%)`,
           perServing: `$${(offer.tiers.threePack.price / (offer.servings * 3)).toFixed(2)}/srv`,
@@ -135,7 +135,7 @@ export default function OffersLibraryPage() {
           label: '6-PACK',
           price: offer.tiers.sixPack.price,
           originalPrice: offer.tiers.sixPack.originalPrice,
-          shipping: 'FREE ship',
+          shipping: 'FREE Shipping',
           gift: offer.tiers.sixPack.gift,
           save: `Save $${(offer.tiers.sixPack.originalPrice - offer.tiers.sixPack.price).toFixed(2)} (${offer.tiers.sixPack.savePercent}%)`,
           perServing: `$${(offer.tiers.sixPack.price / (offer.servings * 6)).toFixed(2)}/srv`,
@@ -410,12 +410,12 @@ export default function OffersLibraryPage() {
                     <span className="offer-tier-original">${offer.tiers.threePack.originalPrice}</span>
                     <span className="offer-tier-price">${offer.tiers.threePack.price}</span>
                   </div>
-                  <div className="offer-tier-shipping">FREE ship</div>
+                  <div className="offer-tier-shipping">FREE Shipping</div>
                   {offer.tiers.threePack.gift && (
                     <div className="offer-tier-gift">🎁 {offer.tiers.threePack.gift}</div>
                   )}
                   <div className="offer-tier-totals">
-                    <div className="offer-tier-save">Save {offer.tiers.threePack.savePercent}%</div>
+                    <div className="offer-tier-save">Save ${(offer.tiers.threePack.originalPrice - offer.tiers.threePack.price).toFixed(2)} ({offer.tiers.threePack.savePercent}%)</div>
                     <div className="offer-tier-per-unit">
                       ${(offer.tiers.threePack.price / (offer.servings * 3)).toFixed(2)}/srv
                     </div>
@@ -445,12 +445,12 @@ export default function OffersLibraryPage() {
                     <span className="offer-tier-original">${offer.tiers.sixPack.originalPrice}</span>
                     <span className="offer-tier-price">${offer.tiers.sixPack.price}</span>
                   </div>
-                  <div className="offer-tier-shipping">FREE ship</div>
+                  <div className="offer-tier-shipping">FREE Shipping</div>
                   {offer.tiers.sixPack.gift && (
                     <div className="offer-tier-gift">🎁 {offer.tiers.sixPack.gift}</div>
                   )}
                   <div className="offer-tier-totals">
-                    <div className="offer-tier-save">Save {offer.tiers.sixPack.savePercent}%</div>
+                    <div className="offer-tier-save">Save ${(offer.tiers.sixPack.originalPrice - offer.tiers.sixPack.price).toFixed(2)} ({offer.tiers.sixPack.savePercent}%)</div>
                     <div className="offer-tier-per-unit">
                       ${(offer.tiers.sixPack.price / (offer.servings * 6)).toFixed(2)}/srv
                     </div>
